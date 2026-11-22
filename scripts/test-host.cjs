@@ -7,9 +7,12 @@ const { runTests } = require('@vscode/test-electron');
 const root = path.resolve(__dirname, '..');
 const scope = '[Obsidian Prism — Obsidian Dark]';
 const baseline = {
-  'workbench.colorTheme': 'Default Dark Modern',
-  'workbench.preferredDarkColorTheme': 'Default Dark Modern',
-  'workbench.preferredLightColorTheme': 'Default Light Modern',
+  // These built-in IDs are identical in VS Code 1.96 and current stable.
+  // "Default Dark Modern" is migrated to "Dark Modern" by newer VS Code,
+  // which would look like an extension mutation in the activation assertion.
+  'workbench.colorTheme': 'Monokai',
+  'workbench.preferredDarkColorTheme': 'Monokai',
+  'workbench.preferredLightColorTheme': 'Solarized Light',
   'workbench.preferredHighContrastColorTheme': 'Default High Contrast',
   'workbench.preferredHighContrastLightColorTheme': 'Default High Contrast Light',
   'window.autoDetectColorScheme': false,
@@ -22,18 +25,18 @@ const baseline = {
   'workbench.colorCustomizations': {
     'editorLineNumber.activeForeground': '#EEDDAA',
     [scope]: { 'editor.background': '#191923', 'button.background': '#AABBCC' },
-    '[Default Dark Modern]': { 'editor.lineHighlightBorder': '#664422' },
+    '[Monokai]': { 'editor.lineHighlightBorder': '#664422' },
   },
   'editor.tokenColorCustomizations': {
     textMateRules: [{ name: 'User global function color', scope: 'entity.name.function', settings: { foreground: '#55DDCC' } }],
     [scope]: { textMateRules: [{ name: 'User Prism numeric color', scope: 'constant.numeric', settings: { foreground: '#FFCC77' } }] },
-    '[Default Dark Modern]': { comments: '#88AA99' },
+    '[Monokai]': { comments: '#88AA99' },
   },
   'editor.semanticTokenColorCustomizations': {
     enabled: true,
     rules: { 'variable.readonly': '#ABCDEF' },
     [scope]: { rules: { property: '#112233' } },
-    '[Default Dark Modern]': { rules: { function: '#CCAA77' } },
+    '[Monokai]': { rules: { function: '#CCAA77' } },
   },
   'telemetry.telemetryLevel': 'off',
   'extensions.autoCheckUpdates': false,

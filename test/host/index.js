@@ -78,7 +78,7 @@ exports.run = async function run() {
     const colors = read('workbench.colorCustomizations');
     assert.equal(colors['editorLineNumber.activeForeground'], '#EEDDAA');
     assert.equal(colors[scope]['editor.background'], '#191923');
-    assert.deepEqual(colors['[Default Dark Modern]'], baseline['workbench.colorCustomizations']['[Default Dark Modern]']);
+    assert.deepEqual(colors['[Monokai]'], baseline['workbench.colorCustomizations']['[Monokai]']);
     assert.equal(read('workbench.colorTheme'), baseline['workbench.colorTheme'], 'changing a preference must not select a theme');
   });
 

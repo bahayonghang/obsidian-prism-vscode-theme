@@ -322,5 +322,10 @@
     "esbuild": "0.28.2",
     "playwright": "^1.56.1",
     "typescript": "5.9.3"
+  },
+  "overrides": {
+    "@vscode/vsce": {
+      "minimatch": "11.0.1"
+    }
   }
 }
