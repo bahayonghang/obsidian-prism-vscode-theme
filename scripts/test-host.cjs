@@ -86,6 +86,7 @@ async function runProfile(attempt, repetitions) {
       extensionTestsEnv: {
         PRISM_HOST_TEST_BASELINE: JSON.stringify(baseline),
         PRISM_HOST_TEST_ISOLATED: '1',
+        PRISM_HOST_TEST_SETTINGS_FILE: path.join(userData, 'User', 'settings.json'),
         ...(process.env.PRISM_EXPECTED_IDE_VERSION ? { PRISM_EXPECTED_IDE_VERSION: process.env.PRISM_EXPECTED_IDE_VERSION } : {}),
       },
       launchArgs,

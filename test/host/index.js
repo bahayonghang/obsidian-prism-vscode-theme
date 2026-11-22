@@ -2,6 +2,7 @@
 const assert = require('node:assert/strict');
 const vscode = require('vscode');
 const { detectHostAppearance } = require('../../out/host.js');
+const { AppearanceOwnership } = require('../../out/ownership.js');
 
 const extensionId = 'bahayonghang.obsidian-prism-vscode-theme';
 const scope = '[Obsidian Prism — Obsidian Dark]';
@@ -49,9 +50,50 @@ function prismRules() {
 exports.run = async function run() {
   assert.equal(process.env.PRISM_HOST_TEST_ISOLATED, '1', 'Run through scripts/test-host.cjs to protect real user settings');
   const baseline = JSON.parse(process.env.PRISM_HOST_TEST_BASELINE);
+  // Bounded test-only diagnostics for the intermittent legacy configuration
+  // failure. Capture only fixture preferences, selected colors and rule counts.
+  const trace = [];
+  const record = entry => { trace.push(entry); if (trace.length > 32) trace.shift(); };
+  const snapshot = (get = read) => {
+    const colors = get('workbench.colorCustomizations') || {};
+    const tokens = get('editor.tokenColorCustomizations') || {};
+    return {
+      preferences: ['accent', 'sidebarSurface', 'inputBorder', 'italicComments'].map(key => [key, get(`obsidianPrism.${key}`)]),
+      scopes: labels.map(label => {
+        const key = `[${label}]`;
+        return [label, colors[key]?.['sideBar.background'], colors[key]?.['input.border'], colors[key]?.['button.background'], tokens[key]?.textMateRules?.length];
+      }),
+    };
+  };
+  const compact = value => value?.present ? (Array.isArray(value.value) ? { rules: value.value.length } : value.value) : null;
+  const ownership = store => Object.entries(store.load()?.groups.colors || {}).flatMap(([key, root]) => root.leaves.filter(leaf => ['sideBar.background', 'input.border', 'textMateRules'].includes(leaf.path.at(-1))).map(leaf => ({ key, path: leaf.path, applied: compact(leaf.applied), pending: compact(leaf.pending), detached: !!leaf.detached })));
+  const apply = AppearanceOwnership.prototype.apply;
+  AppearanceOwnership.prototype.apply = async function (group, patches) {
+    if (group === 'colors') record({ event: 'apply:start', state: snapshot(), ownership: ownership(this.store) });
+    try {
+      const conflicts = await apply.call(this, group, patches);
+      if (group === 'colors') record({ event: 'apply:end', conflicts, state: snapshot(), ownership: ownership(this.store) });
+      return conflicts;
+    } catch (error) {
+      record({ event: 'apply:error', group, message: String(error), state: snapshot() });
+      throw error;
+    }
+  };
+  const changes = vscode.workspace.onDidChangeConfiguration(event => {
+    if (['obsidianPrism', 'workbench.colorCustomizations', 'editor.tokenColorCustomizations'].some(key => event.affectsConfiguration(key))) record({ event: 'configuration', state: snapshot() });
+  });
   let checks = 0;
   async function check(name, body) {
-    await body();
+    try { await body(); }
+    catch (error) {
+      let disk;
+      try {
+        const settings = JSON.parse(require('node:fs').readFileSync(process.env.PRISM_HOST_TEST_SETTINGS_FILE, 'utf8'));
+        disk = snapshot(key => settings[key]);
+      } catch (readError) { disk = { error: String(readError) }; }
+      console.error(`[host] Failure diagnostics: ${JSON.stringify({ check: name, current: snapshot(), disk, trace })}`);
+      throw error;
+    }
     checks += 1;
     console.log(`[host] PASS ${name}`);
   }
@@ -257,4 +299,6 @@ exports.run = async function run() {
   });
 
   console.log(`[host] ${checks} integration checks passed in VS Code ${vscode.version}.`);
+  changes.dispose();
+  AppearanceOwnership.prototype.apply = apply;
 };
