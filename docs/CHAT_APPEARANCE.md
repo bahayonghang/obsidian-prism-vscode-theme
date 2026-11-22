@@ -118,6 +118,26 @@ CSS 同时要求 `html[data-prism-host-appearance]` 和 `data-prism-host-palette
 
 正常卸载流程是先使用插件的“停用并恢复”，再卸载扩展。只在扩展管理页点击“禁用”不会删除应用启动钩子，已经加载的样式可能继续存在。loader 会检查对应扩展包是否仍存在，避免在扩展被移除后继续套用旧样式；这不等于自动从程序文件中删除启动钩子。独立恢复脚本用于扩展已移除时的恢复，仍执行同样的归属与哈希检查。
 
+### 扩展已移除时如何恢复
+
+最方便的方式是重新安装本插件 VSIX，执行 **Obsidian Prism: Disable and Restore Chat Appearance / 停用并恢复对话外观**，然后完全退出并重启 Antigravity。
+
+如果无法打开扩展，但本机已有 Node.js 22 或更新版本，可以先完全退出所有 Antigravity 窗口，再运行安装时保留的独立脚本。将下列占位路径换成实际的 `resources/app` 路径；包含空格时保留引号。
+
+Windows PowerShell：
+
+```powershell
+node "C:\实际安装目录\resources\app\out\obsidian-prism-desktop\restore.mjs"
+```
+
+Linux 终端：
+
+```sh
+node "/实际安装目录/resources/app/out/obsidian-prism-desktop/restore.mjs"
+```
+
+成功后重新打开 Antigravity。脚本保留备份供检查；如果提示哈希不匹配或应用已更新，会停止覆盖并保留现有程序。此时不要手动把旧 `main.original` 覆盖到新版本的 `main.js`。
+
 ### 设置与安装权限分离
 
 五个 `chat*` 配置只描述外观，不包含任何 `enabled`、路径、脚本或命令字段。旧版设置 JSON 仍可导入，并补齐新选项的默认值。导入、安装扩展、切换语言、切换主题都不能安装启动钩子。
