@@ -3,6 +3,7 @@
   "name": "Obsidian Prism — Warm Alabaster",
   "type": "light",
   "colors": {
+    "obsidianPrism.themeMarker": "#505204",
     "foreground": "#1C1814",
     "descriptionForeground": "#6B6257",
     "disabledForeground": "#1C18146B",

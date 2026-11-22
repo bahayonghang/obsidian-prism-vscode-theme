@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.3.0 — 2026-11-22
+
+Tracking: [real chat appearance #3](https://github.com/bahayonghang/obsidian-prism-vscode-theme/issues/3) and [settings language #4](https://github.com/bahayonghang/obsidian-prism-vscode-theme/issues/4).
+
+- Add an explicitly enabled desktop Antigravity appearance adapter with verified startup-file fingerprints, original backups, conflict detection and restoration. This optional path modifies an application file; native themes remain independently usable.
+- Add appearance-only aurora/texture backgrounds, composer surfaces, model pills and portaled model menu styling for audited modern/legacy structures. Keep native interactions, icons, popup placement and model behavior.
+- Add five separate chat preferences. Saving or importing settings cannot install the adapter; switching away from Prism removes its stylesheet.
+- Add bilingual native Settings descriptions and friendly option labels while retaining stored values and old settings exports.
+- Move the independent extension language control to the top of Theme Studio and native settings. Save language changes immediately without applying other theme drafts. Add a language-selection command.
+- Separate the desktop file adapter from the Node-free browser bundle. Document full-restart, update, shared-installation, uninstall and recovery boundaries.
+- Add file recovery tests, actual Electron cross-frame/CSP tests, host startup checks and Studio command/language interaction checks. Final execution evidence is recorded in the linked issues; fixture renders are not authenticated chat screenshots.
+
 ## 0.2.0 — 2026-11-21
 
 Antigravity IDE is now the primary host, with standard VS Code compatibility retained. Tracking: [issue #2](https://github.com/bahayonghang/obsidian-prism-vscode-theme/issues/2).

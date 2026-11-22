@@ -3,6 +3,7 @@
   "name": "Obsidian Prism — Daylight Crystal",
   "type": "light",
   "colors": {
+    "obsidianPrism.themeMarker": "#505203",
     "foreground": "#0F172A",
     "descriptionForeground": "#5B6A81",
     "disabledForeground": "#0F172A6B",

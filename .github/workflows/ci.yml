@@ -46,6 +46,9 @@ jobs:
       - name: Check Theme Studio interactions and screenshots
         if: matrix.vscode == 'stable'
         run: npm run test:ui
+      - name: Check real generated chat styles and preserved fixture interactions
+        if: matrix.vscode == 'stable'
+        run: npm run test:chat-ui
       - name: Package installable extension
         run: npm run package
       - name: Upload Theme Studio screenshots
@@ -53,7 +56,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: theme-studio-screenshots
-          path: artifacts/studio-*.png
+          path: |
+            artifacts/studio-*.png
+            artifacts/chat-*.png
           if-no-files-found: ignore
       - name: Upload VSIX
         uses: actions/upload-artifact@v4
@@ -62,10 +67,54 @@ jobs:
           path: artifacts/*.vsix
           if-no-files-found: error
 
+  antigravity-windows:
+    name: Antigravity IDE 2.8.0 Windows
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Build and verify filesystem recovery on Windows
+        run: npm ci && npm test
+      - name: Prepare the official Windows USER build in the disposable runner
+        id: ide
+        shell: pwsh
+        run: ./scripts/prepare-antigravity-windows.ps1
+      - name: Install the production adapter in the isolated Windows copy
+        id: adapter_install
+        run: node scripts/manage-test-adapter.cjs enable
+        env:
+          VSCODE_EXECUTABLE_PATH: ${{ steps.ide.outputs.executable }}
+          PRISM_EXPECTED_IDE_VERSION: '2.8.0'
+      - name: Run actual Antigravity Windows extension-host checks
+        run: npm run test:host
+        env:
+          VSCODE_EXECUTABLE_PATH: ${{ steps.ide.outputs.executable }}
+          VSCODE_TEST_VERSION: '1.107.0'
+          PRISM_EXPECTED_IDE_VERSION: '2.8.0'
+      - name: Check Windows startup and restore the exact original entry
+        if: always() && steps.adapter_install.outcome == 'success'
+        run: node scripts/manage-test-adapter.cjs restore
+        env:
+          VSCODE_EXECUTABLE_PATH: ${{ steps.ide.outputs.executable }}
+          PRISM_EXPECTED_IDE_VERSION: '2.8.0'
+      - name: Upload Windows evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: antigravity-windows-2.8.0
+          path: |
+            artifacts/antigravity-source-*-windows.json
+            artifacts/adapter-startup-*.json
+          if-no-files-found: error
+
   antigravity:
     name: Antigravity IDE ${{ matrix.ide }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -81,6 +130,12 @@ jobs:
       - name: Verify official IDE archives and color source contracts
         id: ide
         run: python3 scripts/prepare-antigravity.py --version '${{ matrix.ide }}' --github-output "$GITHUB_OUTPUT"
+      - name: Install the production adapter into the disposable audited IDE
+        id: adapter_install
+        run: node scripts/manage-test-adapter.cjs enable
+        env:
+          VSCODE_EXECUTABLE_PATH: ${{ steps.ide.outputs.executable }}
+          PRISM_EXPECTED_IDE_VERSION: ${{ matrix.ide }}
       - name: Run theme extension in an isolated actual Antigravity IDE host
         run: xvfb-run -a npm run test:host
         env:
@@ -88,10 +143,23 @@ jobs:
           VSCODE_TEST_VERSION: '1.107.0'
           PRISM_EXPECTED_IDE_VERSION: ${{ matrix.ide }}
           PRISM_HOST_TEST_REPEATS: ${{ matrix.ide == '1.23.2' && '3' || '1' }}
+      - name: Verify real startup and restore the original IDE entry
+        if: always() && steps.adapter_install.outcome == 'success'
+        run: node scripts/manage-test-adapter.cjs restore
+        env:
+          VSCODE_EXECUTABLE_PATH: ${{ steps.ide.outputs.executable }}
+          PRISM_EXPECTED_IDE_VERSION: ${{ matrix.ide }}
+      - name: Exercise the production frame loader in actual Electron
+        run: xvfb-run -a npm run test:adapter-electron
+        env:
+          VSCODE_EXECUTABLE_PATH: ${{ steps.ide.outputs.executable }}
+          PRISM_EXPECTED_IDE_VERSION: ${{ matrix.ide }}
       - name: Upload source-contract reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: antigravity-source-${{ matrix.ide }}
-          path: artifacts/antigravity-source-*.json
+          path: |
+            artifacts/antigravity-source-*.json
+            artifacts/adapter-*.json
           if-no-files-found: error

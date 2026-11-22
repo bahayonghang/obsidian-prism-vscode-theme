@@ -3,7 +3,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const {
-  DEFAULT_SETTINGS, SETTING_DEFINITIONS, SETTING_KEYS,
+  DEFAULT_SETTINGS, SETTING_DEFINITIONS, SETTING_KEYS, CHAT_APPEARANCE_KEYS,
   normalizeSettings, validateSettings, serializeSettings, parseSettings, isPaletteId,
 } = require('../out/config.js');
 
@@ -40,6 +40,8 @@ test('manual invalid values fall back independently while valid preferences surv
 test('exports round-trip every supported nondefault control and omit unrelated editor settings', () => {
   const settings = {
     ...DEFAULT_SETTINGS, accent: 'custom', customAccent: '#123ABC', contrast: 'high',
+    chatBackground: 'aurora', chatBackgroundIntensity: 35,
+    chatComposerStyle: 'native', chatModelStyle: 'native', chatMotion: 'subtle',
     italicComments: true, boldKeywords: true, codeFont: 'cascadia', ligatures: 'on',
     smoothCaret: 'off', smoothScrolling: 'on', cornerStyle: 'soft', ambientIntensity: 35,
     motion: 'off', language: 'zh-CN', preferredDark: 'warm', preferredLight: 'alabaster',
@@ -56,6 +58,23 @@ test('partial supported imports fill defaults without changing the shared defaul
   const result = parseSettings(JSON.stringify(envelope({ accent: 'amber', customAccent: '#bAda55' })));
   assert.deepEqual(result, { ...DEFAULT_SETTINGS, accent: 'amber', customAccent: '#BADA55' });
   assert.deepEqual(DEFAULT_SETTINGS, before);
+});
+
+test('older exports add chat appearance preferences without importing an adapter enable state', () => {
+  const oldPreferences = Object.fromEntries(Object.entries(DEFAULT_SETTINGS).filter(([key]) => !CHAT_APPEARANCE_KEYS.includes(key)));
+  oldPreferences.language = 'zh-CN';
+  oldPreferences.accent = 'iris';
+  const imported = parseSettings(JSON.stringify(envelope(oldPreferences)));
+  assert.equal(imported.language, 'zh-CN');
+  assert.equal(imported.accent, 'iris');
+  assert.deepEqual(Object.fromEntries(CHAT_APPEARANCE_KEYS.map(key => [key, imported[key]])), {
+    chatBackground: 'auroraTexture', chatBackgroundIntensity: 70,
+    chatComposerStyle: 'prism', chatModelStyle: 'prism', chatMotion: 'off',
+  });
+  for (const key of ['enabled', 'chatAppearanceEnabled', 'adapterEnabled', 'patch']) {
+    assert.equal(Object.hasOwn(imported, key), false);
+    assert.throws(() => parseSettings(JSON.stringify(envelope({ ...oldPreferences, [key]: true }))), /Unknown setting/);
+  }
 });
 
 test('import rejects malformed roots, wrong schema versions and extra envelope fields', () => {
@@ -87,6 +106,9 @@ test('strict field validation prevents coercion and CSS injection', () => {
     { ambientIntensity: NaN }, { ambientIntensity: Infinity }, { ambientIntensity: 101 },
     { language: 'zh' }, { motion: '180fps' }, { codeFont: 'url(https://example.invalid/font)' },
     { preferredDark: 'crystal' }, { preferredLight: 'obsidian' },
+    { chatBackground: 'url(https://example.invalid/background)' }, { chatBackground: 'custom' },
+    { chatBackgroundIntensity: '70' }, { chatBackgroundIntensity: 99 },
+    { chatComposerStyle: true }, { chatModelStyle: 'custom' }, { chatMotion: 'standard' },
     { smoothCaret: true }, { ligatures: false }, { customAccent: '#fff' },
     { customAccent: '#12345678' }, { customAccent: 'red' },
     { customAccent: '#123456; background:url(https://example.invalid/)' },

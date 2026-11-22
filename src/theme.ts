@@ -6,6 +6,7 @@
  * contrast-aware accent controls. GPL-3.0-only. See NOTICE and UPSTREAM.md.
  */
 import { PALETTES, type PaletteId } from './palettes';
+import { PRISM_THEME_MARKERS, THEME_MARKER_ID } from './theme-marker';
 
 export interface ThemeOptions {
   accent: 'default' | 'cobalt' | 'iris' | 'amber' | 'mono' | 'custom';
@@ -181,6 +182,7 @@ export function createTheme(id: PaletteId, options: Partial<ThemeOptions> = {}):
   const info = ensureContrast(dark ? '#669DF6' : '#2563EB', background, textRatio);
   const transparent = '#00000000';
   const colors: Record<string, string> = {
+    [THEME_MARKER_ID]: PRISM_THEME_MARKERS[id],
     'foreground': foreground,
     'descriptionForeground': muted,
     'disabledForeground': alpha(p.foreground, 0.42),

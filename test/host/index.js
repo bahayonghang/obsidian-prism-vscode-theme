@@ -124,7 +124,7 @@ exports.run = async function run() {
     assert.equal(extension.isActive, true);
     assert.equal(extension.packageJSON.contributes.themes.length, 4);
     assert.deepEqual(extension.packageJSON.contributes.themes.map((theme) => theme.label), labels);
-    assert.equal(extension.packageJSON.contributes.commands.length, 11);
+    assert.equal(extension.packageJSON.contributes.commands.length, 15);
     const registered = await vscode.commands.getCommands(true);
     for (const item of extension.packageJSON.contributes.commands) assert.ok(registered.includes(item.command), item.command);
     // Drain the extension's activation queue through an intentionally empty

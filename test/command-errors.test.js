@@ -26,7 +26,21 @@ class Emitter {
 const uri = value => ({ toString: () => value });
 const disposable = () => ({ dispose() {} });
 
-async function fixture(t, preferences = {}) {
+function chatAdapterFixture() {
+  let state = { state: 'available', supported: true, installed: false, enabled: false, restartRequired: false, reason: 'Audited test installation', target: '/fixture/resources/app/out/main.js' };
+  const calls = [];
+  return {
+    calls,
+    adapter: {
+      async info() { return copy(state); },
+      async enable(css) { calls.push({ action: 'enable', css }); state = { ...state, state: 'restart-required', installed: true, enabled: true, restartRequired: true }; return copy(state); },
+      async update(css) { calls.push({ action: 'update', css }); return copy(state); },
+      async disable() { calls.push({ action: 'disable' }); state = { ...state, state: 'available', installed: false, enabled: false, restartRequired: true }; return copy(state); },
+    },
+  };
+}
+
+async function fixture(t, preferences = {}, adapter) {
   const values = copy({ ...baseline, ...preferences });
   const defaults = Object.fromEntries(Object.entries(DEFAULT_SETTINGS).map(([key, value]) => [`obsidianPrism.${key}`, value]));
   const storage = {};
@@ -39,6 +53,8 @@ async function fixture(t, preferences = {}) {
   const failures = new Map();
   let receiveMessage;
   let reportFailure;
+  let confirm = true;
+  let pickedLanguage = 'zh-CN';
   t.mock.method(console, 'error', (...args) => errors.push(args));
 
   const vscode = {
@@ -77,6 +93,8 @@ async function fixture(t, preferences = {}) {
       // Notification dismissal must never hold up command completion or rejection.
       showErrorMessage(message) { notifications.push({ level: 'error', message }); return new Promise(() => {}); },
       showInformationMessage(message) { notifications.push({ level: 'info', message }); return new Promise(() => {}); },
+      async showWarningMessage(message, options, action) { notifications.push({ level: 'warning', message, options }); return confirm ? action : undefined; },
+      async showQuickPick(items) { return items.find(item => item.value === pickedLanguage); },
       createWebviewPanel() {
         const disposed = new Emitter();
         return {
@@ -106,7 +124,7 @@ async function fixture(t, preferences = {}) {
   Module._load = function (name, parent, isMain) { return name === 'vscode' ? vscode : originalLoad.call(this, name, parent, isMain); };
   let extension;
   try { extension = require('../out/extension.js'); } finally { Module._load = originalLoad; }
-  extension.activate(context);
+  extension.activate(context, adapter);
   await extension.deactivate(); // Drain the real activation queue; no test-only runtime hook.
   t.after(async () => {
     await extension.deactivate();
@@ -120,6 +138,8 @@ async function fixture(t, preferences = {}) {
     failWrite: (key, error) => failures.set(key, error),
     failReport: error => { reportFailure = error; },
     drain: () => extension.deactivate(),
+    confirm: value => { confirm = value; },
+    pickLanguage: value => { pickedLanguage = value; },
   };
 }
 
@@ -238,4 +258,78 @@ test('a delayed storage echo cannot detach newer owned token rules, while real m
   assert.deepEqual(f.values[semanticKey], baseline[semanticKey]);
   assert.equal(f.values['obsidianPrism.accent'], undefined);
   assert.equal(f.values['obsidianPrism.italicComments'], undefined);
+});
+
+test('chat preferences and theme application never install the optional adapter', async t => {
+  const chat = chatAdapterFixture();
+  const f = await fixture(t, { 'obsidianPrism.chatBackground': 'aurora' }, chat.adapter);
+  await f.userWrite('obsidianPrism.chatComposerStyle', 'prism');
+  await f.drain();
+  await f.command('openSettings');
+  await f.message({ type: 'apply', palette: 'crystal', settings: { chatBackground: 'auroraTexture', chatBackgroundIntensity: 100 } });
+  await f.drain();
+  assert.deepEqual(chat.calls, [], 'activation, preference changes, and Apply Theme cannot install or touch an unowned adapter');
+  assert.equal(f.values['obsidianPrism.chatBackgroundIntensity'], 100);
+});
+
+test('explicit chat enable saves only chat preferences and keeps a palette-routed bundle across window themes', async t => {
+  const chat = chatAdapterFixture();
+  const f = await fixture(t, { 'workbench.colorTheme': 'Obsidian Prism — Obsidian Dark' }, chat.adapter);
+  await f.command('openSettings');
+  await f.message({ type: 'enableChatAppearance', settings: { chatBackground: 'aurora', chatBackgroundIntensity: 35, codeFont: 'jetbrains', language: 'zh-CN', accent: 'iris' } });
+  await f.drain();
+  assert.equal(chat.calls.filter(call => call.action === 'enable').length, 1);
+  assert.match(chat.calls.find(call => call.action === 'enable').css, /data-prism-host-appearance/);
+  assert.equal(f.values['obsidianPrism.chatBackground'], 'aurora');
+  assert.equal(f.values['obsidianPrism.chatBackgroundIntensity'], 35);
+  for (const key of ['codeFont', 'language', 'accent']) assert.equal(f.values[`obsidianPrism.${key}`], undefined, `${key} draft is not applied`);
+  assert.match(f.notifications.find(note => note.level === 'warning').options.detail, /Fully quit and reopen/);
+  await f.userWrite('workbench.colorTheme', 'Monokai');
+  await f.drain();
+  assert.equal(chat.calls.at(-1).action, 'update');
+  assert.equal(chat.calls.at(-1).css, chat.calls.find(call => call.action === 'enable').css, 'a non-Prism window cannot erase another window’s palette-routed bundle');
+  for (const palette of ['obsidian', 'warm', 'crystal', 'alabaster']) assert.ok(chat.calls.at(-1).css.includes(`data-prism-host-palette="${palette}"`));
+  await f.command('disableChatAppearance');
+  assert.equal(chat.calls.at(-1).action, 'disable');
+});
+
+test('cancelled chat enable neither writes preferences nor installs an adapter', async t => {
+  const chat = chatAdapterFixture();
+  const f = await fixture(t, { 'workbench.colorTheme': 'Obsidian Prism — Obsidian Dark' }, chat.adapter);
+  await f.command('openSettings');
+  f.confirm(false);
+  const writesBefore = f.writes.length;
+  await f.message({ type: 'enableChatAppearance', settings: { chatBackground: 'none' } });
+  await f.drain();
+  assert.equal(f.writes.length, writesBefore);
+  assert.deepEqual(chat.calls, []);
+});
+
+test('independent language changes persist immediately without changing the active theme or installing chat styling', async t => {
+  const chat = chatAdapterFixture();
+  const f = await fixture(t, {}, chat.adapter);
+  const original = copy(f.values);
+  const writeOffset = f.writes.length;
+  await f.command('chooseLanguage');
+  await f.drain();
+  assert.equal(f.values['obsidianPrism.language'], 'zh-CN');
+  assert.equal(f.values['workbench.colorTheme'], original['workbench.colorTheme']);
+  assert.deepEqual(f.writes.slice(writeOffset), ['obsidianPrism.language']);
+  assert.deepEqual(chat.calls, []);
+  await f.command('openSettings');
+  await f.message({ type: 'setLanguage', value: 'en' });
+  await f.drain();
+  assert.equal(f.values['obsidianPrism.language'], 'en');
+  assert.equal(f.messages.filter(message => message.type === 'state').at(-1).language, 'en');
+  assert.deepEqual(chat.calls, []);
+});
+
+test('an application update racing a chat refresh cannot be reported as a successful live update', async t => {
+  const chat = chatAdapterFixture();
+  const f = await fixture(t, { 'workbench.colorTheme': 'Obsidian Prism — Obsidian Dark' }, chat.adapter);
+  await f.command('enableChatAppearance');
+  await f.drain();
+  chat.adapter.update = async () => ({ state: 'available', supported: true, installed: false, enabled: false, restartRequired: false, reason: 'Application updated; explicit enable is required.' });
+  await assert.rejects(f.command('updateChatAppearance'), /Application updated/);
+  assert.ok(f.notifications.some(note => note.level === 'error' && /Application updated/.test(note.message)));
 });

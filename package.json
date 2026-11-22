@@ -1,8 +1,8 @@
 {
   "name": "obsidian-prism-vscode-theme",
   "displayName": "Obsidian Prism Theme",
-  "description": "Prism color themes for Antigravity IDE and VS Code, with conversation previews, bilingual settings and reversible appearance controls.",
-  "version": "0.2.0",
+  "description": "Prism themes for Antigravity IDE and VS Code, with bilingual settings, reversible controls and optional styling for the actual Antigravity chat sidebar.",
+  "version": "0.3.0",
   "publisher": "bahayonghang",
   "license": "GPL-3.0-only",
   "author": "bahayonghang",
@@ -37,7 +37,7 @@
     "color": "#0E0E11",
     "theme": "dark"
   },
-  "main": "./out/extension.js",
+  "main": "./out/desktop.js",
   "browser": "./dist/browser.js",
   "extensionKind": [
     "ui",
@@ -60,6 +60,11 @@
         "category": "Obsidian Prism"
       },
       {
+        "command": "obsidianPrism.chooseLanguage",
+        "title": "%command.chooseLanguage%",
+        "category": "Obsidian Prism"
+      },
+      {
         "command": "obsidianPrism.chooseTheme",
         "title": "%command.chooseTheme%",
         "category": "Obsidian Prism"
@@ -72,6 +77,21 @@
       {
         "command": "obsidianPrism.showCompatibilityReport",
         "title": "%command.showCompatibilityReport%",
+        "category": "Obsidian Prism"
+      },
+      {
+        "command": "obsidianPrism.enableChatAppearance",
+        "title": "%command.enableChatAppearance%",
+        "category": "Obsidian Prism"
+      },
+      {
+        "command": "obsidianPrism.updateChatAppearance",
+        "title": "%command.updateChatAppearance%",
+        "category": "Obsidian Prism"
+      },
+      {
+        "command": "obsidianPrism.disableChatAppearance",
+        "title": "%command.disableChatAppearance%",
         "category": "Obsidian Prism"
       },
       {
@@ -113,6 +133,23 @@
     "configuration": {
       "title": "Obsidian Prism",
       "properties": {
+        "obsidianPrism.language": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "zh-CN",
+            "en"
+          ],
+          "enumItemLabels": [
+            "%setting.language.option.auto%",
+            "%setting.language.option.zh-CN%",
+            "%setting.language.option.en%"
+          ],
+          "default": "auto",
+          "scope": "application",
+          "order": 0,
+          "markdownDescription": "%setting.language%"
+        },
         "obsidianPrism.accent": {
           "type": "string",
           "enum": [
@@ -123,9 +160,17 @@
             "mono",
             "custom"
           ],
+          "enumItemLabels": [
+            "%setting.accent.option.default%",
+            "%setting.accent.option.cobalt%",
+            "%setting.accent.option.iris%",
+            "%setting.accent.option.amber%",
+            "%setting.accent.option.mono%",
+            "%setting.accent.option.custom%"
+          ],
           "default": "default",
           "scope": "application",
-          "order": 0,
+          "order": 1,
           "markdownDescription": "%setting.accent%"
         },
         "obsidianPrism.customAccent": {
@@ -133,7 +178,7 @@
           "pattern": "^#[0-9a-fA-F]{6}$",
           "default": "#A58AF8",
           "scope": "application",
-          "order": 1,
+          "order": 2,
           "markdownDescription": "%setting.customAccent%"
         },
         "obsidianPrism.contrast": {
@@ -142,9 +187,13 @@
             "standard",
             "high"
           ],
+          "enumItemLabels": [
+            "%setting.contrast.option.standard%",
+            "%setting.contrast.option.high%"
+          ],
           "default": "standard",
           "scope": "application",
-          "order": 2,
+          "order": 3,
           "markdownDescription": "%setting.contrast%"
         },
         "obsidianPrism.sidebarSurface": {
@@ -154,9 +203,14 @@
             "unified",
             "tinted"
           ],
+          "enumItemLabels": [
+            "%setting.sidebarSurface.option.layered%",
+            "%setting.sidebarSurface.option.unified%",
+            "%setting.sidebarSurface.option.tinted%"
+          ],
           "default": "layered",
           "scope": "application",
-          "order": 3,
+          "order": 4,
           "markdownDescription": "%setting.sidebarSurface%"
         },
         "obsidianPrism.inputBorder": {
@@ -165,23 +219,108 @@
             "subtle",
             "accent"
           ],
+          "enumItemLabels": [
+            "%setting.inputBorder.option.subtle%",
+            "%setting.inputBorder.option.accent%"
+          ],
           "default": "subtle",
           "scope": "application",
-          "order": 4,
+          "order": 5,
           "markdownDescription": "%setting.inputBorder%"
+        },
+        "obsidianPrism.chatBackground": {
+          "type": "string",
+          "enum": [
+            "none",
+            "aurora",
+            "auroraTexture"
+          ],
+          "enumItemLabels": [
+            "%setting.chatBackground.option.none%",
+            "%setting.chatBackground.option.aurora%",
+            "%setting.chatBackground.option.auroraTexture%"
+          ],
+          "default": "auroraTexture",
+          "scope": "application",
+          "order": 6,
+          "markdownDescription": "%setting.chatBackground%"
+        },
+        "obsidianPrism.chatBackgroundIntensity": {
+          "type": "number",
+          "enum": [
+            0,
+            35,
+            70,
+            100
+          ],
+          "enumItemLabels": [
+            "%setting.chatBackgroundIntensity.option.0%",
+            "%setting.chatBackgroundIntensity.option.35%",
+            "%setting.chatBackgroundIntensity.option.70%",
+            "%setting.chatBackgroundIntensity.option.100%"
+          ],
+          "default": 70,
+          "scope": "application",
+          "order": 7,
+          "markdownDescription": "%setting.chatBackgroundIntensity%"
+        },
+        "obsidianPrism.chatComposerStyle": {
+          "type": "string",
+          "enum": [
+            "native",
+            "prism"
+          ],
+          "enumItemLabels": [
+            "%setting.chatComposerStyle.option.native%",
+            "%setting.chatComposerStyle.option.prism%"
+          ],
+          "default": "prism",
+          "scope": "application",
+          "order": 8,
+          "markdownDescription": "%setting.chatComposerStyle%"
+        },
+        "obsidianPrism.chatModelStyle": {
+          "type": "string",
+          "enum": [
+            "native",
+            "prism"
+          ],
+          "enumItemLabels": [
+            "%setting.chatModelStyle.option.native%",
+            "%setting.chatModelStyle.option.prism%"
+          ],
+          "default": "prism",
+          "scope": "application",
+          "order": 9,
+          "markdownDescription": "%setting.chatModelStyle%"
+        },
+        "obsidianPrism.chatMotion": {
+          "type": "string",
+          "enum": [
+            "off",
+            "subtle"
+          ],
+          "enumItemLabels": [
+            "%setting.chatMotion.option.off%",
+            "%setting.chatMotion.option.subtle%"
+          ],
+          "default": "off",
+          "scope": "application",
+          "order": 10,
+          "markdownDescription": "%setting.chatMotion%"
         },
         "obsidianPrism.italicComments": {
           "type": "boolean",
           "default": false,
           "scope": "application",
-          "order": 5,
+          "order": 11,
           "markdownDescription": "%setting.italicComments%"
         },
         "obsidianPrism.boldKeywords": {
           "type": "boolean",
           "default": false,
           "scope": "application",
-          "order": 6,
+          "order": 12,
           "markdownDescription": "%setting.boldKeywords%"
         },
         "obsidianPrism.codeFont": {
@@ -192,9 +331,15 @@
             "cascadia",
             "sfmono"
           ],
+          "enumItemLabels": [
+            "%setting.codeFont.option.default%",
+            "%setting.codeFont.option.jetbrains%",
+            "%setting.codeFont.option.cascadia%",
+            "%setting.codeFont.option.sfmono%"
+          ],
           "default": "default",
           "scope": "application",
-          "order": 7,
+          "order": 13,
           "markdownDescription": "%setting.codeFont%"
         },
         "obsidianPrism.ligatures": {
@@ -204,9 +349,14 @@
             "on",
             "off"
           ],
+          "enumItemLabels": [
+            "%setting.ligatures.option.inherit%",
+            "%setting.ligatures.option.on%",
+            "%setting.ligatures.option.off%"
+          ],
           "default": "inherit",
           "scope": "application",
-          "order": 8,
+          "order": 14,
           "markdownDescription": "%setting.ligatures%"
         },
         "obsidianPrism.smoothCaret": {
@@ -216,9 +366,14 @@
             "on",
             "off"
           ],
+          "enumItemLabels": [
+            "%setting.smoothCaret.option.inherit%",
+            "%setting.smoothCaret.option.on%",
+            "%setting.smoothCaret.option.off%"
+          ],
           "default": "inherit",
           "scope": "application",
-          "order": 9,
+          "order": 15,
           "markdownDescription": "%setting.smoothCaret%"
         },
         "obsidianPrism.smoothScrolling": {
@@ -228,9 +383,14 @@
             "on",
             "off"
           ],
+          "enumItemLabels": [
+            "%setting.smoothScrolling.option.inherit%",
+            "%setting.smoothScrolling.option.on%",
+            "%setting.smoothScrolling.option.off%"
+          ],
           "default": "inherit",
           "scope": "application",
-          "order": 10,
+          "order": 16,
           "markdownDescription": "%setting.smoothScrolling%"
         },
         "obsidianPrism.cornerStyle": {
@@ -240,9 +400,14 @@
             "balanced",
             "soft"
           ],
+          "enumItemLabels": [
+            "%setting.cornerStyle.option.sharp%",
+            "%setting.cornerStyle.option.balanced%",
+            "%setting.cornerStyle.option.soft%"
+          ],
           "default": "balanced",
           "scope": "application",
-          "order": 11,
+          "order": 17,
           "markdownDescription": "%setting.cornerStyle%"
         },
         "obsidianPrism.ambientIntensity": {
@@ -253,9 +418,15 @@
             70,
             100
           ],
+          "enumItemLabels": [
+            "%setting.ambientIntensity.option.0%",
+            "%setting.ambientIntensity.option.35%",
+            "%setting.ambientIntensity.option.70%",
+            "%setting.ambientIntensity.option.100%"
+          ],
           "default": 70,
           "scope": "application",
-          "order": 12,
+          "order": 18,
           "markdownDescription": "%setting.ambientIntensity%"
         },
         "obsidianPrism.motion": {
@@ -266,22 +437,16 @@
             "standard",
             "ultra"
           ],
+          "enumItemLabels": [
+            "%setting.motion.option.off%",
+            "%setting.motion.option.subtle%",
+            "%setting.motion.option.standard%",
+            "%setting.motion.option.ultra%"
+          ],
           "default": "standard",
           "scope": "application",
-          "order": 13,
+          "order": 19,
           "markdownDescription": "%setting.motion%"
-        },
-        "obsidianPrism.language": {
-          "type": "string",
-          "enum": [
-            "auto",
-            "zh-CN",
-            "en"
-          ],
-          "default": "auto",
-          "scope": "application",
-          "order": 14,
-          "markdownDescription": "%setting.language%"
         },
         "obsidianPrism.preferredDark": {
           "type": "string",
@@ -289,9 +454,13 @@
             "obsidian",
             "warm"
           ],
+          "enumItemLabels": [
+            "%setting.preferredDark.option.obsidian%",
+            "%setting.preferredDark.option.warm%"
+          ],
           "default": "obsidian",
           "scope": "application",
-          "order": 15,
+          "order": 20,
           "markdownDescription": "%setting.preferredDark%"
         },
         "obsidianPrism.preferredLight": {
@@ -300,9 +469,13 @@
             "crystal",
             "alabaster"
           ],
+          "enumItemLabels": [
+            "%setting.preferredLight.option.crystal%",
+            "%setting.preferredLight.option.alabaster%"
+          ],
           "default": "crystal",
           "scope": "application",
-          "order": 16,
+          "order": 21,
           "markdownDescription": "%setting.preferredLight%"
         }
       }
@@ -332,6 +505,18 @@
         "uiTheme": "vs",
         "path": "./themes/alabaster-color-theme.json"
       }
+    ],
+    "colors": [
+      {
+        "id": "obsidianPrism.themeMarker",
+        "description": "%color.themeMarker%",
+        "defaults": {
+          "dark": "#00000000",
+          "light": "#00000000",
+          "highContrast": "#00000000",
+          "highContrastLight": "#00000000"
+        }
+      }
     ]
   },
   "scripts": {
@@ -341,6 +526,8 @@
     "test": "npm run build && node --test test/*.test.js",
     "test:host": "node scripts/test-host.cjs",
     "test:ui": "node scripts/test-ui.cjs",
+    "test:chat-ui": "node scripts/test-chat-ui.cjs",
+    "test:adapter-electron": "node scripts/test-adapter-electron.cjs",
     "vscode:prepublish": "npm run build",
     "package": "node scripts/package.cjs",
     "check:generated": "npm run build && git diff --exit-code -- themes package.json package.nls.json package.nls.zh-cn.json"

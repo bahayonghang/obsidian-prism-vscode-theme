@@ -3,6 +3,7 @@
   "name": "Obsidian Prism — Obsidian Dark",
   "type": "dark",
   "colors": {
+    "obsidianPrism.themeMarker": "#505201",
     "foreground": "#F2F2F5",
     "descriptionForeground": "#8A8A98",
     "disabledForeground": "#F2F2F56B",

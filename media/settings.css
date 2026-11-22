@@ -79,6 +79,14 @@ select { cursor: pointer; font-size: 11px; } select option { color: var(--vscode
 .checkbox-row input { margin: 0; width: 14px; height: 14px; accent-color: var(--studio-accent); }
 .checkbox-row label { cursor: pointer; }
 .scope-note { margin: -7px 0 17px; color: var(--studio-muted); font-size: 11px; line-height: 1.65; }
+.language-bar { display: flex; align-items: center; gap: 24px; padding: 16px 18px; margin-bottom: 28px; background: var(--studio-surface); border: 1px solid var(--studio-border); border-radius: var(--radius-lg); }
+.language-bar .field { flex: 0 0 195px; margin: 0; }.language-bar p { margin: 0; color: var(--studio-muted); font-size: 11px; line-height: 1.6; }
+.chat-appearance-section { border-top: 1px solid var(--studio-border); margin-top: 22px; padding-top: 20px; }
+.chat-appearance-heading { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 18px; }.chat-appearance-heading h3 { font-size: 12px; font-weight: 600; }
+.chat-adapter-card { margin: 16px 0; padding: 12px; border: 1px solid var(--studio-border); border-radius: var(--radius-md); background: var(--vscode-list-hoverBackground, #8080800c); }
+.chat-adapter-card strong { font-size: 11px; font-weight: 600; }.chat-adapter-card p { color: var(--studio-muted); font-size: 10px; line-height: 1.65; margin: 6px 0 0; overflow-wrap: anywhere; }
+.chat-adapter-card[data-state="conflict"] { border-color: var(--vscode-inputValidation-warningBorder, #a4772c); }
+@media (max-width: 600px) { .language-bar { align-items: stretch; flex-direction: column; gap: 12px; }.language-bar .field { flex: auto; } }
 .field-hint { display: block; font-size: 10px; color: var(--studio-muted); margin: -6px 0 16px; line-height: 1.6; }
 .custom-accent-row { margin: 0 0 17px; }.color-inputs { display: flex; gap: 8px; margin-bottom: 12px; }.color-inputs input[type="color"] { width: 42px; height: 34px; padding: 3px; border: 1px solid var(--studio-border); border-radius: var(--radius-md); background: var(--studio-surface); cursor: pointer; }.color-inputs input[type="text"] { width: 125px; font-family: var(--vscode-editor-font-family, monospace); font-size: 11px; }.color-inputs input[aria-invalid="true"] { border-color: var(--vscode-inputValidation-errorBorder, #e5534b); }
 .button-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 6px; }

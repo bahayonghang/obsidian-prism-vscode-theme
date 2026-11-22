@@ -31,6 +31,11 @@ export function getWebviewHtml(webview: Webview, extensionUri: Uri): string {
       <span class="pill" data-i18n="nativeTheme">Also works in VS Code</span>
     </section>
 
+    <section class="language-bar" aria-labelledby="language-label">
+      <label class="field" for="language"><span id="language-label" data-i18n="languageLabel">Extension language</span><select id="language" data-setting="language"></select></label>
+      <p data-i18n="languageScope">Saves immediately for this studio, extension dialogs and reports. Native Settings descriptions and choices stay bilingual; the IDE generates their row headings.</p>
+    </section>
+
     <fieldset class="palette-fieldset"><legend class="section-label" data-i18n="paletteLegend">01 / Choose your palette</legend><div id="palette-grid" class="palette-grid"></div></fieldset>
 
     <div class="studio-columns">
@@ -51,6 +56,17 @@ export function getWebviewHtml(webview: Webview, extensionUri: Uri): string {
           <p class="scope-note" data-i18n="antigravityScope">Modern Antigravity uses this shared sidebar color for its toolbar, conversation canvas and derived composer. Explorer and other sidebars change too; legacy differences are listed below.</p>
           <label class="field" for="sidebar-surface"><span data-i18n="sidebarSurfaceLabel">Sidebar & conversation surface</span><select id="sidebar-surface" data-setting="sidebarSurface"></select></label>
           <p class="field-hint" data-i18n="composerDerivedHint">Modern Antigravity derives its composer from this canvas. Legacy IDE 1.23.2 uses the editor background and fixed gray instead. Native input colors do not control either composer independently.</p>
+          <div class="chat-appearance-section">
+            <div class="chat-appearance-heading"><h3 data-i18n="chatAppearanceHeading">Real conversation appearance</h3><span class="pill small" data-i18n="optionalAdapter">Optional adapter</span></div>
+            <p class="scope-note" data-i18n="chatAppearanceScope">Add a quiet aurora background, a raised composer and model pills to the actual Antigravity chat. Uses the applied Prism palette. Enable separately; saving preferences alone never installs the adapter.</p>
+            <label class="field" for="chat-background"><span data-i18n="chatBackgroundLabel">Conversation background</span><select id="chat-background" data-setting="chatBackground"></select></label>
+            <label class="field" for="chat-background-intensity"><span data-i18n="chatIntensityLabel">Background intensity</span><select id="chat-background-intensity" data-setting="chatBackgroundIntensity"></select></label>
+            <div class="field-grid"><label class="field" for="chat-composer-style"><span data-i18n="chatComposerLabel">Composer</span><select id="chat-composer-style" data-setting="chatComposerStyle"></select></label><label class="field" for="chat-model-style"><span data-i18n="chatModelLabel">Model pill & menu</span><select id="chat-model-style" data-setting="chatModelStyle"></select></label></div>
+            <label class="field" for="chat-motion"><span data-i18n="chatMotionLabel">Conversation motion</span><select id="chat-motion" data-setting="chatMotion"></select></label>
+            <div id="chat-adapter-card" class="chat-adapter-card" role="status"><strong id="chat-adapter-state"></strong><p id="chat-adapter-reason"></p></div>
+            <p class="field-hint" data-i18n="chatAdapterScope">Enabling backs up and changes one verified Antigravity startup file. Fully quit and reopen the app afterward. Updates may require a new compatibility check. Disable before uninstalling Prism.</p>
+            <div class="button-row"><button id="enable-chat-appearance" class="button secondary" data-i18n="enableChatAppearance">Enable chat appearance…</button><button id="update-chat-appearance" class="button secondary" data-i18n="updateChatAppearance">Apply chat preferences</button><button id="disable-chat-appearance" class="button quiet" data-i18n="disableChatAppearance">Disable & restore</button></div>
+          </div>
         </section>
 
         <section class="control-section" aria-labelledby="type-heading">
@@ -74,7 +90,7 @@ export function getWebviewHtml(webview: Webview, extensionUri: Uri): string {
           <div class="section-heading"><span class="section-number">06</span><h2 id="panel-heading" data-i18n="panelHeading">Studio details</h2><span class="pill small" data-i18n="panelOnly">This panel only</span></div>
           <p class="scope-note" data-i18n="panelScope">Corners, ambient light and motion style this settings panel. They do not change the Antigravity main window, conversation layout or VS Code window.</p>
           <div class="field-grid"><label class="field" for="corner-style"><span data-i18n="cornersLabel">Corners</span><select id="corner-style" data-setting="cornerStyle"></select></label><label class="field" for="ambient-intensity"><span data-i18n="ambientLabel">Ambient light</span><select id="ambient-intensity" data-setting="ambientIntensity"></select></label></div>
-          <div class="field-grid"><label class="field" for="motion"><span data-i18n="motionLabel">Motion</span><select id="motion" data-setting="motion"></select></label><label class="field" for="language"><span data-i18n="languageLabel">Studio language</span><select id="language" data-setting="language"></select></label></div>
+          <label class="field" for="motion"><span data-i18n="motionLabel">Motion</span><select id="motion" data-setting="motion"></select></label>
         </section>
       </div>
 
@@ -96,8 +112,8 @@ export function getWebviewHtml(webview: Webview, extensionUri: Uri): string {
             <div class="preview-titlebar"><div class="window-dots" aria-hidden="true"><i></i><i></i><i></i></div><span>prism / workspace</span><span class="preview-split" aria-hidden="true">◫</span></div>
             <div class="preview-workspace">
               <div class="preview-activity" aria-hidden="true"><span class="active">▤</span><span>⌕</span><span>⑂</span><span>▦</span><span class="activity-bottom">⚙</span></div>
-              <div class="preview-explorer" aria-hidden="true"><span class="explorer-heading">EXPLORER <b>···</b></span><span class="explorer-folder">⌄ &nbsp; PRISM</span><span class="explorer-item">⌄ &nbsp; src</span><span class="explorer-item selected"><i>TS</i> theme.ts</span><span class="explorer-item"><i>TS</i> palette.ts</span><span class="explorer-item">◇ &nbsp; settings.json</span><span class="explorer-item">≡ &nbsp; README.md</span></div>
-              <div class="preview-editor"><div class="preview-tabs"><span class="preview-tab"><b>TS</b> theme.ts <span>×</span></span><span class="preview-tab inactive">palette.ts</span></div><div class="preview-breadcrumb">src &nbsp; › &nbsp; theme.ts &nbsp; › &nbsp; illuminate</div><pre id="code-preview" aria-label="TypeScript syntax color preview"><code></code></pre><div class="preview-terminal"><div class="terminal-tabs"><span>TERMINAL</span><span>PROBLEMS <i>0</i></span></div><div><span class="terminal-success">❯</span> npm run build</div><div class="terminal-output"><span class="terminal-success">✓</span> <span data-i18n="buildPreview">A little clarity, compiled.</span></div></div></div>
+              <div class="preview-explorer" aria-hidden="true"><span class="explorer-heading"><span data-i18n="explorerPreviewLabel">EXPLORER</span> <b>···</b></span><span class="explorer-folder">⌄ &nbsp; PRISM</span><span class="explorer-item">⌄ &nbsp; src</span><span class="explorer-item selected"><i>TS</i> theme.ts</span><span class="explorer-item"><i>TS</i> palette.ts</span><span class="explorer-item">◇ &nbsp; settings.json</span><span class="explorer-item">≡ &nbsp; README.md</span></div>
+              <div class="preview-editor"><div class="preview-tabs"><span class="preview-tab"><b>TS</b> theme.ts <span>×</span></span><span class="preview-tab inactive">palette.ts</span></div><div class="preview-breadcrumb">src &nbsp; › &nbsp; theme.ts &nbsp; › &nbsp; illuminate</div><pre id="code-preview" data-i18n-aria="syntaxPreviewLabel" aria-label="TypeScript syntax color preview"><code></code></pre><div class="preview-terminal"><div class="terminal-tabs"><span data-i18n="terminalPreviewLabel">TERMINAL</span><span><span data-i18n="problemsPreviewLabel">PROBLEMS</span> <i>0</i></span></div><div><span class="terminal-success">❯</span> npm run build</div><div class="terminal-output"><span class="terminal-success">✓</span> <span data-i18n="buildPreview">A little clarity, compiled.</span></div></div></div>
             </div><div class="preview-statusbar"><span>⑂ main &nbsp; ✓ 0 &nbsp; ⚠ 0</span><span>UTF-8 &nbsp; TypeScript &nbsp; ◇ Prism</span></div>
             </section>
           </div>
@@ -113,7 +129,7 @@ export function getWebviewHtml(webview: Webview, extensionUri: Uri): string {
       </aside>
     </div>
 
-    <footer class="studio-footer"><div><strong>Obsidian Prism</strong><span data-i18n="credit">Palette design by RMvdesi · Independent Antigravity IDE / VS Code port</span></div><nav aria-label="Project links"><button id="upstream-source" class="text-link" data-i18n="upstream">Upstream project</button><button id="port-source" class="text-link" data-i18n="source">Theme source</button><span>GPL-3.0-only</span></nav></footer>
+    <footer class="studio-footer"><div><strong>Obsidian Prism</strong><span data-i18n="credit">Palette design by RMvdesi · Independent Antigravity IDE / VS Code port</span></div><nav data-i18n-aria="projectLinksLabel" aria-label="Project links"><button id="upstream-source" class="text-link" data-i18n="upstream">Upstream project</button><button id="port-source" class="text-link" data-i18n="source">Theme source</button><span>GPL-3.0-only</span></nav></footer>
   </main>
   <script nonce="${nonce}" src="${script}"></script>
 </body>

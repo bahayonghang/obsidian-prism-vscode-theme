@@ -47,10 +47,31 @@
       credit: '配色设计：RMvdesi · 独立 Antigravity IDE / VS Code 移植版本', upstream: '上游项目', source: '主题源码', invalidAccent: '请先输入完整颜色值，例如 #A58AF8。', waiting: '正在处理…', previewComment: '// 让每一处细节，都清晰一点。'
     }
   };
+  Object.assign(text.en, {
+    languageLabel: 'Extension language', languageScope: 'Saves immediately for this studio, extension dialogs and reports. Native Settings descriptions and choices stay bilingual; the IDE generates their row headings.',
+    chatAppearanceHeading: 'Real conversation appearance', optionalAdapter: 'Optional adapter', chatAppearanceScope: 'Add a quiet aurora background, a raised composer and model pills to the actual Antigravity chat. Uses the applied Prism palette. Enable separately; saving preferences alone never installs the adapter.',
+    chatBackgroundLabel: 'Conversation background', chatBackgroundNone: 'Plain · native background', chatBackgroundAurora: 'Aurora · soft color', chatBackgroundTexture: 'Aurora & fine texture', chatIntensityLabel: 'Background intensity', chatComposerLabel: 'Composer', chatModelLabel: 'Model pill & menu', chatMotionLabel: 'Conversation motion', nativeStyle: 'Keep native style', prismStyle: 'Prism surfaces',
+    chatAdapterScope: 'Enabling backs up and changes one verified Antigravity startup file. Fully quit and reopen the app afterward. Updates may require a new compatibility check. Disable before uninstalling Prism.',
+    enableChatAppearance: 'Enable chat appearance…', updateChatAppearance: 'Apply chat preferences', disableChatAppearance: 'Disable & restore', adapterUnsupported: 'Native theme mode', adapterAvailable: 'Ready to enable', adapterEnabled: 'Adapter installed', adapterRestart: 'Full app restart required', adapterConflict: 'Compatibility or file conflict', adapterUnavailable: 'Real chat styling requires a verified desktop Antigravity installation. Native colors remain available.',
+    projectLinksLabel: 'Project links', syntaxPreviewLabel: 'TypeScript syntax color preview', explorerPreviewLabel: 'EXPLORER', terminalPreviewLabel: 'TERMINAL', problemsPreviewLabel: 'PROBLEMS',
+  });
+  Object.assign(text['zh-CN'], {
+    languageLabel: '扩展语言', languageScope: '立即保存，控制工作室、扩展弹窗和报告。原生设置的说明与选项始终提供双语；行标题由 IDE 根据设置键名生成。',
+    chatAppearanceHeading: '真实对话区外观', optionalAdapter: '可选适配层', chatAppearanceScope: '为实际 Antigravity 对话区添加轻柔极光背景、立体输入框与模型胶囊，使用当前已应用的 Prism 配色。需要单独启用；仅保存偏好不会安装适配层。',
+    chatBackgroundLabel: '对话区背景', chatBackgroundNone: '纯色 · 保留原生背景', chatBackgroundAurora: '极光 · 柔和色彩', chatBackgroundTexture: '极光与细腻纹理', chatIntensityLabel: '背景强度', chatComposerLabel: '输入框', chatModelLabel: '模型胶囊与菜单', chatMotionLabel: '对话区动效', nativeStyle: '保留原生样式', prismStyle: 'Prism 质感',
+    chatAdapterScope: '启用时会备份并修改一个已验证的 Antigravity 启动文件，之后需完全退出并重新打开应用。软件更新后可能需要重新检查兼容性；卸载 Prism 前请先停用。',
+    enableChatAppearance: '启用对话外观…', updateChatAppearance: '应用对话偏好', disableChatAppearance: '停用并恢复', adapterUnsupported: '使用原生主题模式', adapterAvailable: '可以启用', adapterEnabled: '适配层已安装', adapterRestart: '需要完全重启应用', adapterConflict: '兼容性或文件冲突', adapterUnavailable: '真实对话样式需要已验证的桌面版 Antigravity；原生配色功能仍然可用。',
+    projectLinksLabel: '项目链接', syntaxPreviewLabel: 'TypeScript 语法配色预览', explorerPreviewLabel: '资源管理器', terminalPreviewLabel: '终端', problemsPreviewLabel: '问题',
+  });
   const selectChoices = {
     contrast: [['standard', 'standardContrast'], ['high', 'highContrast']],
     sidebarSurface: [['layered', 'layeredSurface'], ['unified', 'unifiedSurface'], ['tinted', 'tintedSurface']],
     inputBorder: [['subtle', 'subtleBorder'], ['accent', 'accentBorder']],
+    chatBackground: [['none', 'chatBackgroundNone'], ['aurora', 'chatBackgroundAurora'], ['auroraTexture', 'chatBackgroundTexture']],
+    chatBackgroundIntensity: [[0, 'ambient0'], [35, 'ambient35'], [70, 'ambient70'], [100, 'ambient100']],
+    chatComposerStyle: [['native', 'nativeStyle'], ['prism', 'prismStyle']],
+    chatModelStyle: [['native', 'nativeStyle'], ['prism', 'prismStyle']],
+    chatMotion: [['off', 'off'], ['subtle', 'subtle']],
     codeFont: [['default', 'fontDefault'], ['jetbrains', 'JetBrains Mono'], ['cascadia', 'Cascadia Code'], ['sfmono', 'SF Mono']],
     ligatures: [['inherit', 'inherit'], ['on', 'on'], ['off', 'off']],
     smoothCaret: [['inherit', 'inherit'], ['on', 'on'], ['off', 'off']],
@@ -160,6 +181,7 @@
     if (key === 'accent' && value !== 'custom') invalidAccent = false;
     translate();
     syncForm();
+    if (key === 'language') post({ type: 'setLanguage', value });
     requestPreview();
   }
 
@@ -194,7 +216,20 @@
     byId('live-preview').style.setProperty('--preview-font', fonts[draft.codeFont] || fonts.default);
     byId('code-preview').style.fontVariantLigatures = draft.ligatures === 'on' ? 'common-ligatures contextual' : draft.ligatures === 'off' ? 'none' : 'normal';
     updateHostCard();
+    updateAdapterCard();
     setPreviewMode(previewMode);
+  }
+
+  function updateAdapterCard() {
+    const adapter = hostState.chatAppearance || { state: 'unsupported', supported: false, installed: false };
+    const labels = { unsupported: 'adapterUnsupported', available: 'adapterAvailable', enabled: 'adapterEnabled', 'restart-required': 'adapterRestart', conflict: 'adapterConflict' };
+    const state = Object.hasOwn(labels, adapter.state) ? adapter.state : 'unsupported';
+    byId('chat-adapter-card').dataset.state = state;
+    byId('chat-adapter-state').textContent = t(labels[state]);
+    byId('chat-adapter-reason').textContent = typeof adapter.reason === 'string' && adapter.reason ? adapter.reason : t('adapterUnavailable');
+    byId('enable-chat-appearance').disabled = !adapter.supported || state === 'conflict' || !!adapter.installed;
+    byId('update-chat-appearance').disabled = !adapter.installed || !adapter.supported || state === 'conflict';
+    byId('disable-chat-appearance').disabled = !adapter.installed && !adapter.canDisable;
   }
 
   function updateHostCard() {
@@ -360,7 +395,7 @@
     control.addEventListener('change', () => {
       if (!hostState) return;
       const key = control.dataset.setting;
-      const value = control.type === 'checkbox' ? control.checked : key === 'ambientIntensity' ? Number(control.value) : control.value;
+      const value = control.type === 'checkbox' ? control.checked : ['ambientIntensity', 'chatBackgroundIntensity'].includes(key) ? Number(control.value) : control.value;
       changeSetting(key, value);
     });
   });
@@ -386,8 +421,11 @@
   });
   byId('apply-typography').addEventListener('click', () => { if (hostState) { setStatus(t('waiting')); post({ type: 'applyTypography', settings: { ...draft } }); } });
   byId('apply-system').addEventListener('click', () => { if (hostState) { setStatus(t('waiting')); post({ type: 'applySystem', settings: { ...draft } }); } });
+  for (const [id, type] of [['enable-chat-appearance', 'enableChatAppearance'], ['update-chat-appearance', 'updateChatAppearance']]) {
+    byId(id).addEventListener('click', () => { if (hostState) { setStatus(t('waiting')); post({ type, settings: { ...draft } }); } });
+  }
   const actions = {
-    'restore-typography': 'restoreTypography', 'restore-system': 'restoreSystem', 'open-settings': 'openSettings', 'compatibility-report': 'showCompatibilityReport', export: 'export', import: 'import', reset: 'reset'
+    'restore-typography': 'restoreTypography', 'restore-system': 'restoreSystem', 'disable-chat-appearance': 'disableChatAppearance', 'open-settings': 'openSettings', 'compatibility-report': 'showCompatibilityReport', export: 'export', import: 'import', reset: 'reset'
   };
   Object.entries(actions).forEach(([id, type]) => byId(id).addEventListener('click', () => { if (hostState) post({ type }); }));
   ['conversation', 'editor'].forEach((mode, index) => {

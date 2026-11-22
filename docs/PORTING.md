@@ -8,7 +8,7 @@
 
 最初的 #1 规划针对标准 VS Code；[issue #2](https://github.com/bahayonghang/obsidian-prism-vscode-theme/issues/2) 补充了 Antigravity 专项调研。上游面向的独立 Antigravity App、Antigravity IDE 与 Google VS Code 扩展必须区分。不能从“扩展不能注入工作台 CSS”推出“Antigravity 对话无法换色”：宿主本身已提供原生主题颜色同步。版本、输入框派生规则与证据见 [ANTIGRAVITY.md](ANTIGRAVITY.md)。
 
-这项区别来自 VS Code 的公开接口：[颜色主题](https://code.visualstudio.com/api/extension-guides/color-theme)支持工作台色值、TextMate 与语义高亮；[扩展限制](https://code.visualstudio.com/api/extension-capabilities/overview#restrictions)明确说明扩展不能访问工作台 DOM 或加入任意自定义样式表。修改安装目录、注入 Electron、启用调试端口不属于本项目采用的实现方式。
+这项区别来自 VS Code 的公开接口：[颜色主题](https://code.visualstudio.com/api/extension-guides/color-theme)支持工作台色值、TextMate 与语义高亮；[扩展限制](https://code.visualstudio.com/api/extension-capabilities/overview#restrictions)明确说明扩展不能访问工作台 DOM 或加入任意自定义样式表。0.1.0 / 0.2.0 只采用原生接口。0.3.0 根据用户对真实对话区背景和形状的要求，增加独立、显式启用的安装文件适配层；它不是原生扩展 API。版本指纹、备份和恢复边界见 [CHAT_APPEARANCE.md](CHAT_APPEARANCE.md)。不启用调试端口。
 
 ## 原生与面板的区别
 
@@ -35,7 +35,7 @@
 | `smoothCaret` | 上游自定义光标跟随 | 映射 VS Code 原生平滑光标选项；不移植 DOM 光标追踪器 |
 | `scrollBottomMotion` | 聊天滚动到底部的动画 | 适配为 VS Code 原生编辑器平滑滚动开关，不复刻聊天自动滚动 |
 | 自动浅色/深色 | 跟随宿主主题状态 | 显式应用 VS Code 系统明暗检测与深浅偏好组合；提供恢复 |
-| `language` | 设置面板语言 | Theme Studio 提供中文和英文；不翻译整个 VS Code |
+| `language` | 插件界面语言 | 工作室、弹窗与报告独立切换；原生说明与选项双语，不改变整个 IDE 显示语言 |
 | `homeLayout/homeRipple/logoInk` | 聊天首页与水波、标志效果 | 适配欢迎区原生底色/前景色；首页布局、水波和品牌图形仍由宿主控制 |
 | `composerRestyle/placeholderStyle` | 聊天输入框和占位文字 | 新版输入框从侧栏底色/前景色派生；旧版从编辑区与固定灰色混合。通过底色间接适配；不提供无效的独立聊天输入框/占位色设置 |
 | `sidebarRestyle/sidebarCompact/sidebarNavFold` | 对话栏布局 | 适配共享原生侧栏颜色，新增分层/统一/淡强调色选项；紧凑、折叠和布局仍由宿主控制 |
@@ -97,9 +97,9 @@ Theme Studio 使用本地资源和 VS Code Webview 消息通信，限制本地�
 
 ## 兼容性与构建
 
-目标 API 为 VS Code `^1.96.0`。原生主题为静态 JSON。扩展分别提供桌面和浏览器 bundle；共享代码使用 VS Code URI/配置 API，不通过 Node 文件系统或子进程修改应用。浏览器扩展入口运行在 Web Worker，除了 `vscode` 以外的依赖需要打进 bundle。见 [Web Extensions](https://code.visualstudio.com/api/extension-guides/web-extensions)。
+目标 API 为 VS Code `^1.96.0`。原生主题为静态 JSON。扩展分别提供桌面和浏览器 bundle；共享代码使用 VS Code URI/配置 API；桌面专用入口通过独立 Node 文件适配器处理用户显式启用的真实对话样式。浏览器 bundle 不包含该适配器，不修改应用文件。浏览器扩展入口运行在 Web Worker，除了 `vscode` 以外的依赖需要打进 bundle。见 [Web Extensions](https://code.visualstudio.com/api/extension-guides/web-extensions)。
 
-桌面安装使用 `npm run package` 生成的 `artifacts/obsidian-prism-vscode-theme-0.2.0.vsix`。在浏览器宿主中验证需要 VS Code 官方侧载或 `@vscode/test-web` 流程；不能把桌面安装成功当作浏览器验收通过。打包工具为 [`@vscode/vsce`](https://code.visualstudio.com/api/working-with-extensions/publishing-extension)，构建和打包不自动发布 Marketplace。
+桌面安装使用 `npm run package` 生成的 `artifacts/obsidian-prism-vscode-theme-0.3.0.vsix`。在浏览器宿主中验证需要 VS Code 官方侧载或 `@vscode/test-web` 流程；不能把桌面安装成功当作浏览器验收通过。打包工具为 [`@vscode/vsce`](https://code.visualstudio.com/api/working-with-extensions/publishing-extension)，构建和打包不自动发布 Marketplace。
 
 ## 验收重点
 

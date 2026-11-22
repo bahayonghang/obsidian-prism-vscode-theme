@@ -1,5 +1,7 @@
 # Antigravity IDE 对话侧栏适配
 
+**本文记录 0.2.0 的原生颜色路径。0.3.0 新增的可选安装文件适配层与恢复说明见 [CHAT_APPEARANCE.md](CHAT_APPEARANCE.md)。**
+
 对应 [Issue #2](https://github.com/bahayonghang/obsidian-prism-vscode-theme/issues/2)，目标版本 **0.2.0**。证据检查日期：2026-11-21（America/New_York；UTC 日期为 2026-11-22）。
 
 ## 结论
@@ -37,7 +39,7 @@ Antigravity App、Antigravity IDE 和 `Google.google-antigravity` 扩展有各�
 | `obsidianPrism.sidebarSurface` | `layered`（默认）、`unified`、`tinted` | 调整共享侧栏配色，影响对话侧栏及资源管理器等原生侧栏；现代对话卡片继续由这些颜色派生 |
 | `obsidianPrism.inputBorder` | `subtle`（默认）、`accent` | 调整原生 `input.border`；不作为对话卡片边框开关 |
 
-主题功能通过 VS Code 主题与配置接口工作。本版不修改 Antigravity 安装目录，也不注入第三方工作台 CSS/JavaScript。
+主题功能通过 VS Code 主题与配置接口工作。0.2.0 不修改 Antigravity 安装目录，也不注入第三方工作台 CSS/JavaScript。
 
 ## 现代侧栏：颜色如何到达实际组件
 
@@ -106,7 +108,7 @@ VS Code 的[主题颜色参考](https://code.visualstudio.com/api/references/the
 
 旧版可以随主题改变主要背景和文字，但输入框与新版的联动关系不同。旧包不包含这次截图中的完整欢迎文案，不能仅凭截图给用户指定旧版版本号。该包的地址、构建信息和文件哈希也收录在证据文件中。
 
-历史项目 [Antigravity-Better](https://github.com/016/Antigravity-Better) 通过改写工作台文件并注入样式来覆盖旧版选择器，说明额外定制可以依赖内部实现。这不是原生主题 API 的承诺。本项目当前没有引入该方式，也没有引入其主题以外功能。
+历史项目 [Antigravity-Better](https://github.com/016/Antigravity-Better) 通过改写工作台文件并注入样式来覆盖旧版选择器，说明额外定制可以依赖内部实现。这不是原生主题 API 的承诺。0.2.0 没有引入该方式；0.3.0 的独立实现见前述新文档，仍不引入主题以外功能。
 
 ## 验证范围与复核办法
 

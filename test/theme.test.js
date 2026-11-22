@@ -11,6 +11,15 @@ const accents = ['default', 'cobalt', 'iris', 'amber', 'mono', 'custom'];
 const contrasts = ['standard', 'high'];
 const colorPattern = /^#[0-9A-F]{6}(?:[0-9A-F]{2})?$/;
 
+test('native per-window palette markers are registered and transparent for unrelated themes', () => {
+  const { THEME_MARKER_ID, PRISM_THEME_MARKERS } = require('../out/theme-marker.js');
+  const contribution = require('../package.json').contributes.colors.find(item => item.id === THEME_MARKER_ID);
+  assert.ok(contribution, 'the marker uses the public custom-color contribution');
+  assert.deepEqual(new Set(Object.values(contribution.defaults)), new Set(['#00000000']));
+  assert.equal(new Set(Object.values(PRISM_THEME_MARKERS)).size, 4);
+  for (const theme of THEMES) assert.equal(createTheme(theme.id).colors[THEME_MARKER_ID], PRISM_THEME_MARKERS[theme.id]);
+});
+
 function assertReadable(foreground, background, minimum, message) {
   assert.ok(contrastRatio(foreground, background) >= minimum, `${message}: ${foreground} on ${background} has ratio ${contrastRatio(foreground, background)}`);
 }

@@ -20,7 +20,7 @@ Original upstream contributors and component notices remain in [THIRD_PARTY_NOTI
 - Repository: <https://github.com/bahayonghang/obsidian-prism-vscode-theme>
 - Maintainer: **bahayonghang**
 - Downstream copyright: **Copyright (C) 2026 bahayonghang and contributors**
-- Modification date: **2026-11-21**
+- Modification dates: **2026-11-21, 2026-11-22**
 - License of the derivative work: **GPL-3.0-only**
 
 Modified/adapted material and additions:
@@ -31,7 +31,8 @@ Modified/adapted material and additions:
 4. Limited corners, glow and custom motion to the settings panel because supported VS Code extensions cannot inject arbitrary workbench CSS. Added explicit apply/restore flows for editor typography and system appearance.
 5. Added setting ownership/restoration, validated import/export, localization, desktop/browser bundles, packaging, tests and documentation.
 6. Added Antigravity-native shared sidebar controls, a color-only conversation model, and read-only host compatibility reporting. These are independently implemented adapters based on observed color contracts; no Google application code or binaries are redistributed. See [Antigravity evidence](docs/ANTIGRAVITY.md).
-7. Excluded upstream application injection, background services, telemetry, thought translation, model controls, chat management, mascots, browser and file viewers.
+7. Excluded upstream application injection code, background services, telemetry, thought translation, model controls, chat management, mascots, browser and file viewers. Version 0.3.0 adds a new, independent opt-in desktop stylesheet adapter with verified file fingerprints and restoration; it does not copy upstream controllers or enable private host feature flags.
+8. Added appearance-only aurora/texture, composer and model-menu CSS inspired by the upstream materials; added bilingual native settings labels and independent extension language selection.
 
 The complete [LICENSE](LICENSE), [NOTICE](NOTICE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) are copied **verbatim** from the pinned upstream commit. The notices here supplement them; they do not replace or alter them. New source files and generated artifacts should retain a clear derivation/modification notice where their format permits it, with this document included in the distribution.
 

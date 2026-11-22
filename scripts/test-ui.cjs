@@ -17,7 +17,7 @@ try { ({ getWebviewHtml } = require('../out/webview.js')); } finally { Module._l
 const { createTheme } = require('../out/theme.js');
 const { createAntigravityPreview } = require('../out/conversation.js');
 const { THEMES, PALETTES } = require('../out/palettes.js');
-const { DEFAULT_SETTINGS, TYPOGRAPHY_KEYS, SYSTEM_KEYS } = require('../out/config.js');
+const { DEFAULT_SETTINGS, TYPOGRAPHY_KEYS, SYSTEM_KEYS, CHAT_APPEARANCE_KEYS } = require('../out/config.js');
 
 async function main() {
   let html;
@@ -54,6 +54,7 @@ async function main() {
       type: 'state', settings: { ...DEFAULT_SETTINGS }, activeTheme: 'Default Dark Modern', themes: THEMES,
       palette: 'obsidian', preview: createTheme('obsidian'), conversationPreview: createAntigravityPreview(createTheme('obsidian')), language: 'en', autoLanguage: 'en',
       typographyApplied: false, systemApplied: false,
+      chatAppearance: { state: 'unsupported', supported: false, installed: false, enabled: false, restartRequired: false, reason: 'UI fixture: native theme mode only.' },
       host: { appName: 'Visual Studio Code (UI fixture)', vscodeVersion: '1.96.0', kind: 'vscode', colorPath: 'standard', referenceMatch: false }
     };
     const send = message => page.evaluate(data => window.dispatchEvent(new MessageEvent('message', { data })), message);
@@ -86,6 +87,17 @@ async function main() {
         state.conversationPreview = createAntigravityPreview(state.preview);
         await hostColors(state.preview); await send({ ...state, resetDraft: true });
         await send({ type: 'status', level: 'info', message: 'Theme applied.' });
+      } else if (message.type === 'setLanguage') {
+        state.settings.language = message.value;
+        state.language = message.value === 'auto' ? state.autoLanguage : message.value;
+        await send(state);
+      } else if (message.type === 'enableChatAppearance' || message.type === 'updateChatAppearance') {
+        for (const key of CHAT_APPEARANCE_KEYS) state.settings[key] = message.settings[key];
+        state.chatAppearance = { state: 'restart-required', supported: true, installed: true, enabled: true, restartRequired: true, reason: 'UI fixture: restart needed; no real installation was changed.' };
+        await send(state);
+      } else if (message.type === 'disableChatAppearance') {
+        state.chatAppearance = { state: 'available', supported: true, installed: false, enabled: false, restartRequired: true, reason: 'UI fixture: restored.' };
+        await send(state);
       } else if (message.type === 'applyTypography' || message.type === 'applySystem') {
         const typography = message.type === 'applyTypography';
         for (const key of typography ? TYPOGRAPHY_KEYS : SYSTEM_KEYS) state.settings[key] = message.settings[key];
@@ -107,6 +119,9 @@ async function main() {
     assert.equal(await page.locator('input[name="accent"]').count(), 6);
     assert.equal(await page.locator('#sidebar-surface').inputValue(), 'layered');
     assert.equal(await page.locator('#input-border').inputValue(), 'subtle');
+    assert.equal(await page.locator('#enable-chat-appearance').isDisabled(), true, 'unsupported hosts cannot enable the local adapter');
+    assert.equal(await page.locator('#update-chat-appearance').isDisabled(), true);
+    assert.equal(await page.locator('#disable-chat-appearance').isDisabled(), true);
     assert.equal(await page.locator('#conversation-preview').isVisible(), true, 'conversation is the initial preview');
     assert.equal(await page.locator('#conversation-color-content').isVisible(), true, 'semantic composer preview is available');
     assert.equal(await page.locator('#editor-preview').isVisible(), false);
@@ -215,10 +230,15 @@ async function main() {
     await page.locator('#custom-accent').fill('#008877');
     assert.equal(await page.locator('#apply').isDisabled(), false);
     await page.locator('#language').selectOption('zh-CN');
+    await page.waitForFunction(() => document.getElementById('language').value === 'zh-CN' && document.documentElement.lang === 'zh-CN');
+    assert.equal(state.settings.language, 'zh-CN', 'language is persisted independently before Apply Theme');
+    assert.equal(state.palette, 'obsidian', 'switching the language does not apply the warm palette draft');
     assert.equal(await page.locator('html').getAttribute('lang'), 'zh-CN');
     assert.equal(await page.locator('#antigravity-heading').textContent(), 'Antigravity 与侧边栏');
     assert.equal(await page.locator('#preview-conversation-tab').textContent(), '对话区');
     assert.match(await page.locator('#host-reference-note').textContent(), /不代表已在当前宿主完成实机外观验证/);
+    assert.equal(await page.locator('#code-preview').getAttribute('aria-label'), 'TypeScript 语法配色预览');
+    assert.equal(await page.locator('.studio-footer nav').getAttribute('aria-label'), '项目链接');
     await page.locator('#language').selectOption('auto');
     assert.equal(await page.locator('html').getAttribute('lang'), 'en');
     await page.locator('#language').selectOption('zh-CN');
@@ -229,6 +249,30 @@ async function main() {
     assert.equal(state.settings.customAccent, '#008877');
     assert.equal(await page.locator('#palette-warm').isChecked(), true);
     await page.screenshot({ path: path.join(artifacts, 'studio-zh.png'), fullPage: true });
+
+    // These validate Studio commands only; the production filesystem/frame
+    // adapter has separate tests using the actual Electron runtime.
+    state.chatAppearance = { state: 'available', supported: true, installed: false, enabled: false, restartRequired: false, reason: 'Audited fixture installation.' };
+    await send(state);
+    assert.equal(await page.locator('#enable-chat-appearance').isDisabled(), false);
+    await page.locator('#chat-background').selectOption('aurora');
+    await page.locator('#chat-background-intensity').selectOption('35');
+    await page.locator('#enable-chat-appearance').click();
+    await page.waitForFunction(() => document.getElementById('chat-adapter-card').dataset.state === 'restart-required');
+    assert.equal(state.settings.chatBackground, 'aurora');
+    assert.equal(state.settings.chatBackgroundIntensity, 35, 'intensity is transmitted as a number');
+    assert.equal(await page.locator('#enable-chat-appearance').isDisabled(), true);
+    assert.equal(await page.locator('#disable-chat-appearance').isDisabled(), false);
+    await page.locator('#chat-model-style').selectOption('native');
+    await page.locator('#update-chat-appearance').click();
+    await page.waitForFunction(() => document.getElementById('chat-model-style').value === 'native');
+    assert.ok(messages.some(message => message.type === 'updateChatAppearance' && message.settings.chatModelStyle === 'native'));
+    await page.locator('#disable-chat-appearance').click();
+    await page.waitForFunction(() => document.getElementById('disable-chat-appearance').disabled === true);
+    state.chatAppearance = { ...state.chatAppearance, state: 'conflict', supported: false, installed: true, reason: 'Fixture external edit: do not overwrite.' };
+    await send(state);
+    assert.equal(await page.locator('#enable-chat-appearance').isDisabled(), true);
+    assert.equal(await page.locator('#update-chat-appearance').isDisabled(), true);
 
     // Editor-wide actions are explicit and leave color drafts local.
     await page.locator('label[for="accent-amber"]').click();

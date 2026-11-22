@@ -1,0 +1,29 @@
+{
+  "kind": "synthetic-selector-fixtures",
+  "realApplicationCapture": false,
+  "purpose": "Small independently authored structural fixtures for selector/cascade tests. These are not a running Google frontend, a chat implementation or evidence of logged-in host rendering. Text is placeholder test content.",
+  "modern": {
+    "reference": "official-cli-frontend-1.5.14",
+    "sourceFile": "main.js",
+    "sourceSha256": "80bae21f2cf90c2a2fdad3aa6272b93437eea12f9e830fa80c96b4f830f4af61",
+    "marker": "modern",
+    "homeSelector": ".agy-home",
+    "conversationSelector": "[data-testid=\"conversation-view\"]",
+    "composer": "<div data-testid=\"agent-input-box\"><div id=\"antigravity.agentSidePanelInputBox\" class=\"surface-composer relative flex flex-col p-px rounded-2xl bg-card-border\"><div class=\"surface-composer-card relative flex flex-col p-1 bg-card\"><div role=\"textbox\" contenteditable=\"true\" aria-label=\"Fixture composer\"></div><div class=\"agy-composer-footer\"><button type=\"button\" data-testid=\"model-selector-trigger\" aria-haspopup=\"menu\" aria-expanded=\"true\"><span>Fixture model</span></button></div></div></div></div>",
+    "popup": "<div role=\"menu\" class=\"agy-overlay surface-glass bg-card\"><div data-testid=\"model-selector-panel\"><div data-testid=\"model-selector-header\">Fixture menu</div><button role=\"menuitem\" class=\"agy-overlay-item text-foreground\" data-testid=\"model-selector-item\">Selected fixture row</button><button role=\"menuitem\" class=\"agy-overlay-item\" data-testid=\"model-selector-item\" data-highlighted>Highlighted fixture row</button><button role=\"menuitem\" class=\"agy-overlay-item\" data-testid=\"model-selector-item\" aria-disabled=\"true\" data-disabled>Disabled fixture row</button></div></div>",
+    "effortPopup": "<div role=\"menu\" class=\"agy-overlay surface-glass bg-card\"><button role=\"menuitemradio\" class=\"agy-overlay-item\" data-highlighted><span data-testid=\"model-selector-effort-option\">Fixture option</span></button></div>",
+    "popupOutsideComposer": true
+  },
+  "legacy": {
+    "reference": "official-ide-1.23.2-workbench",
+    "sourceFile": "out/vs/workbench/workbench.desktop.main.js",
+    "sourceSha256": "ea1037e96ba164009c8965feb83d9d0d5fd45b39fa83c592ab57302489c590a5",
+    "marker": "legacy",
+    "sidebarSelector": ".antigravity-agent-side-panel",
+    "conversationSelector": "[data-testid=\"conversation-view\"]",
+    "composer": "<div id=\"antigravity.agentSidePanelInputBox\" class=\"relative flex flex-col p-px rounded-2xl bg-gray-500/20\"><div class=\"relative flex flex-col p-1 bg-input\"><div role=\"textbox\" contenteditable=\"true\" aria-label=\"Fixture composer\"></div><div class=\"no-focus-agent-input\"><div role=\"button\" aria-haspopup=\"dialog\" aria-expanded=\"true\"><button type=\"button\" aria-label=\"Select model, current: Fixture model\" class=\"h-7 rounded-lg\"><span>Fixture model</span></button></div></div></div></div>",
+    "popup": "<div role=\"dialog\" aria-modal=\"true\" class=\"!border-0 !w-64 !rounded-2xl !overflow-hidden !bg-ide-editor-background\"><div class=\"flex flex-col max-h-80 border rounded-2xl overflow-hidden bg-ide-chat-background\"><button type=\"button\" data-autofocus=\"true\">Selected fixture row</button><button type=\"button\" data-autofocus=\"false\">Fixture row</button><button type=\"button\" data-autofocus=\"false\" disabled>Disabled fixture row</button></div></div>",
+    "popupOutsideSidebar": true,
+    "limitations": "The sampled legacy model button relies on fixed English aria-label prefixes. Unknown/localized future structures retain their native styling. Only the verified regular model-row buttons are styled; custom-model and battle-option row structures retain native row appearance. Popup placement, transforms, scroll limits and native selection controls are not overridden."
+  }
+}

@@ -3,6 +3,7 @@
   "name": "Obsidian Prism — Warm Charcoal",
   "type": "dark",
   "colors": {
+    "obsidianPrism.themeMarker": "#505202",
     "foreground": "#F2EFE9",
     "descriptionForeground": "#A39E93",
     "disabledForeground": "#F2EFE96B",

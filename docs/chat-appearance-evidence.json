@@ -1,0 +1,98 @@
+{
+  "checkedAt": "2026-11-22",
+  "scope": "Source inspection only. Runtime and visual verification are separate CI evidence.",
+  "windowsOfficialUserInstallers": [
+    {
+      "ideVersion": "1.23.2",
+      "platform": "win32",
+      "arch": "x64",
+      "applicationName": "antigravity",
+      "nameLong": "Antigravity",
+      "productVersion": "1.107.0",
+      "packageMain": "./out/main.js",
+      "packageType": "module",
+      "sourceUrl": "https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/1.23.2-4781536860569600/windows-x64/Antigravity.exe",
+      "archiveSha256": "3874fc761e5c90b3edf8e0365f506ce22241a88f6881cea09713b3f472c4f6ed",
+      "files": {
+        "out/main.js": "c98cfe9d4256fda7e9f30603cdcddf45e206a4dc3181784c1508e218b6562d65",
+        "product.json": "21c2bfd66bc7edea42c6b92811470dd3db1af0c09e8386cf04842adae48e06d1",
+        "package.json": "ae4e48775620fcc016165361b0ac568adbd86e588f3be0c162efa1c343ae29fe"
+      },
+      "scope": "Read-only extraction from official Windows User installer; installer was not executed and no Windows runtime was tested."
+    },
+    {
+      "ideVersion": "2.8.0",
+      "platform": "win32",
+      "arch": "x64",
+      "applicationName": "antigravity-ide",
+      "nameLong": "Antigravity IDE",
+      "productVersion": "1.107.0",
+      "packageMain": "./out/main.js",
+      "packageType": "module",
+      "sourceUrl": "https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/2.8.0-6733682917113856/windows-x64/Antigravity%20IDE.exe",
+      "archiveSha256": "0f63d94c0be212e25157125eb3757272b5aa95ea06538298631c14a3d7709197",
+      "files": {
+        "out/main.js": "187c3f56c0947da78d5991cb0ab34acbf00766bbeb96d7b3781f3b4fd8bffe4d",
+        "product.json": "fd430b1a5e51a476f847894eb729c3fabf686fdab79087761bb6caa34888e7bd",
+        "package.json": "55a0f63d0fbb1022faf98afb31c62678d192f10073d5aa9f2637fc9ca63e3daa"
+      },
+      "scope": "Read-only extraction from official Windows User installer; installer was not executed and no Windows runtime was tested."
+    }
+  ],
+  "electronApis": [
+    "https://www.electronjs.org/docs/latest/api/web-frame-main",
+    "https://www.electronjs.org/docs/latest/api/web-contents"
+  ],
+  "nativeLocalization": [
+    "https://github.com/microsoft/vscode-l10n/blob/main/README.md",
+    "https://code.visualstudio.com/api/references/contribution-points#contributes.configuration"
+  ],
+  "modernFrontendCsp": {
+    "version": "Antigravity CLI 1.5.14",
+    "sourceUrl": "https://storage.googleapis.com/antigravity-public/antigravity-cli/1.5.14-5302690847260672/linux-x64/cli_linux_x64.tar.gz",
+    "archiveSha256": "d58386322d2073e96b33f7cc32b4e9ae2db6228f58440369725967b2de48c7b5",
+    "binarySha256": "37873b8062391b6202a3d3199ec012abc9e53aab720d26cd65699441497d8c94",
+    "indexHtmlSha256": "118dcfc4e881a41715f2f363ced8ae9afa6b4d7c1acf312da194cb6fab50f768",
+    "header": "Content-Security-Policy",
+    "policyFormat": "frame-ancestors %s; report-uri https://csp.withgoogle.com/csp/JetskiWeb",
+    "binaryEvidence": {
+      "policyStringOffset": "0x66fe96a",
+      "policyStringBytes": 71,
+      "headerNameOffset": "0x65bffe1",
+      "headerNameBytes": 23,
+      "policyReferenceInstruction": "0xa7a8880",
+      "headerNameReferenceInstruction": "0xa7a88d4",
+      "headerMapAssignmentInstruction": "0xa7a8966",
+      "method": "Read-only ELF disassembly: format the 71-byte policy, obtain response headers, canonicalize the header name, and assign the formatted value into the header map."
+    },
+    "indexHtmlEvidence": {
+      "cspMetaPresent": false,
+      "noncePresent": false,
+      "inlineScriptAndStylePresent": true
+    },
+    "conclusion": "The inspected main frontend response-policy construction has no style-src or default-src restriction. Its extracted index HTML declares no additional CSP. This supports inline local styling in this audited distribution without changing a policy.",
+    "limitation": "Static official-distribution evidence only; no authenticated chat HTTP response or logged-in conversation was observed. Additional or future host policies may still block inline styles. The loader checks actual computed styling, removes its own markers on denial, and reports csp-blocked without relaxing CSP."
+  },
+  "perWindowThemeRouting": {
+    "publicColorId": "obsidianPrism.themeMarker",
+    "cssVariable": "--vscode-obsidianPrism-themeMarker",
+    "defaultForOtherThemes": "#00000000",
+    "paletteValues": {
+      "obsidian": "#505201",
+      "warm": "#505202",
+      "crystal": "#505203",
+      "alabaster": "#505204"
+    },
+    "verifiedVersions": [
+      "1.23.2",
+      "2.8.0"
+    ],
+    "legacySource": "getColorRegistry().getColors() emitted onto .monaco-workbench",
+    "modernSource": "WebviewThemeDataProvider enumerates registered colors; pre/index.html applies them to the active content documentElement; direct parent of iframe#jetski-frame",
+    "scope": "Per-window palette isolation; custom appearance preferences still use the last saved installation-wide bundle",
+    "publicSources": [
+      "https://code.visualstudio.com/api/references/contribution-points#contributes.colors",
+      "https://code.visualstudio.com/api/extension-guides/webview#theming-webview-content"
+    ]
+  }
+}
