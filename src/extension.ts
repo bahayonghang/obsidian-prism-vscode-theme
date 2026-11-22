@@ -86,7 +86,12 @@ export function activate(context: vscode.ExtensionContext): void {
   }
   async function run(task: () => Promise<unknown>): Promise<void> {
     try { await enqueue(task); }
-    catch (error) { await status(String(error instanceof Error ? error.message : error), String(error instanceof Error ? error.message : error), 'error'); }
+    catch (error) {
+      // A visible Studio status can otherwise hide host configuration failures
+      // from the extension-host log, including an interrupted restoration.
+      console.error('[Obsidian Prism] Appearance operation failed:', error);
+      await status(String(error instanceof Error ? error.message : error), String(error instanceof Error ? error.message : error), 'error');
+    }
   }
   async function save(partial: Partial<Settings>, keys: readonly (keyof Settings)[] = SETTING_KEYS): Promise<void> {
     const config = vscode.workspace.getConfiguration('obsidianPrism');

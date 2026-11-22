@@ -236,6 +236,13 @@ exports.run = async function run() {
     await write('workbench.colorCustomizations', manualColors);
     await command('resetCustomizations');
 
+    // Keep a bounded diagnostic for host-specific write failures. Test profiles
+    // contain only fixtures; do not dump configuration roots or local paths.
+    const extension = vscode.extensions.getExtension(extensionId);
+    const remainingPreferences = Object.keys(extension.packageJSON.contributes.configuration.properties).filter(key => read(key) !== undefined);
+    const tokenScopes = Object.keys(read('editor.tokenColorCustomizations') || {}).filter(key => key.startsWith('[Obsidian Prism'));
+    console.log(`[host] Reset diagnostics: ${JSON.stringify({ remainingPreferences, tokenScopes })}`);
+
     const expectedColors = JSON.parse(JSON.stringify(baseline['workbench.colorCustomizations']));
     expectedColors[scope]['button.background'] = '#123456';
     assert.deepEqual(read('workbench.colorCustomizations'), expectedColors);
@@ -243,7 +250,6 @@ exports.run = async function run() {
     assert.deepEqual(read('editor.semanticTokenColorCustomizations'), baseline['editor.semanticTokenColorCustomizations']);
     sameValues([...typographyKeys, ...systemKeys, ...highContrastKeys], baseline);
     assert.equal(read('editor.tabSize'), 11);
-    const extension = vscode.extensions.getExtension(extensionId);
     for (const [key, definition] of Object.entries(extension.packageJSON.contributes.configuration.properties)) {
       assert.equal(read(key), undefined, `${key} explicit preference should be cleared`);
       assert.deepEqual(vscode.workspace.getConfiguration().get(key), definition.default, `${key} should use its shipped default`);
