@@ -160,7 +160,11 @@ exports.run = async function run() {
     assert.ok(document.getText().includes(vscode.env.appName));
     assert.ok(document.getText().includes(vscode.version));
     assert.match(document.getText(), /Source reference match|源码样本匹配/);
-    if (vscode.env.appRoot) assert.ok(!document.getText().includes(vscode.env.appRoot), 'local installation paths must not be included');
+    if (vscode.env.appRoot) {
+      const normalizedReport = document.getText().replace(/\\/g, '/').toLowerCase();
+      const normalizedRoot = vscode.env.appRoot.replace(/\\/g, '/').toLowerCase();
+      assert.ok(!normalizedReport.includes(normalizedRoot), 'local installation paths must not be included on any platform');
+    }
     sameValues(keys, before);
   });
 

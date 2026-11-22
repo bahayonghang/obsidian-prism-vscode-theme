@@ -7,7 +7,7 @@ import { createTheme } from './theme';
 import { getWebviewHtml } from './webview';
 import { detectHostAppearance, formatCompatibilityReport, type HostAppearanceInfo } from './host';
 import { createAntigravityPreview } from './conversation';
-import { unavailableChatAdapter, type ChatAppearanceAdapter, type DesktopAppearanceInfo } from './chat-adapter';
+import { formatDesktopAppearanceReport, unavailableChatAdapter, type ChatAppearanceAdapter, type DesktopAppearanceInfo } from './chat-adapter';
 import { generateHostAppearanceBundle } from './host-style';
 
 const LEDGER_KEY = 'appearanceOwnership.v1';
@@ -145,8 +145,8 @@ export function activate(context: vscode.ExtensionContext, chatAdapter: ChatAppe
     const choice = await vscode.window.showWarningMessage(
       tr('Enable Prism styling in the real Antigravity conversation?', '在真实 Antigravity 对话区启用 Prism 外观？'),
       { modal: true, detail: tr(
-        `This optional adapter changes the verified Antigravity startup file and keeps the original for restoration. Fully quit and reopen Antigravity after enabling. Application updates can require a new compatibility check. Disable the adapter before uninstalling Prism.\n\n${current.target || current.appRoot || ''}`,
-        `此可选适配层会修改已验证的 Antigravity 启动文件，并备份原文件供恢复。启用后需要完全退出并重新打开 Antigravity；软件更新后可能需要重新检查兼容性。卸载 Prism 前请先停用适配层。\n\n${current.target || current.appRoot || ''}`,
+        `This optional adapter changes the verified Antigravity startup file and keeps the original for restoration. Fully quit and reopen Antigravity after enabling. Application updates can require a new compatibility check. Disable the adapter before uninstalling Prism.\n\nStartup: ${current.target || current.appRoot || ''}\nBackup: ${current.backup || ''}`,
+        `此可选适配层会修改已验证的 Antigravity 启动文件，并备份原文件供恢复。启用后需要完全退出并重新打开 Antigravity；软件更新后可能需要重新检查兼容性。卸载 Prism 前请先停用适配层。\n\n启动文件：${current.target || current.appRoot || ''}\n备份：${current.backup || ''}`,
       ) }, enable,
     );
     if (choice !== enable) return;
@@ -295,14 +295,7 @@ export function activate(context: vscode.ExtensionContext, chatAdapter: ChatAppe
       colorCustomizations: vscode.workspace.getConfiguration('workbench').get<unknown>('colorCustomizations'),
     });
     const adapter = await chatAdapter.info();
-    compatibilityReport += '\n\n' + tr('Optional real-chat appearance adapter', '可选的真实对话外观适配层') + '\n' + [
-      `${tr('State', '状态')}: ${adapter.state}`,
-      `${tr('Installed / restart required', '已安装 / 需要重启')}: ${adapter.installed} / ${adapter.restartRequired}`,
-      adapter.reason,
-      adapter.target ? `${tr('Startup file', '启动文件')}: ${adapter.target}` : '',
-      adapter.backup ? `${tr('Backup', '备份')}: ${adapter.backup}` : '',
-      tr('Disk compatibility is checked; this report does not inspect account data or prove a live chat render.', '此处检查磁盘兼容性，不读取账户数据，也不代表已验证当前对话页的实际显示。'),
-    ].filter(Boolean).join('\n');
+    compatibilityReport += '\n\n' + formatDesktopAppearanceReport(adapter, language());
     reportChanges.fire(reportUri);
     const document = await vscode.workspace.openTextDocument(reportUri);
     await vscode.window.showTextDocument(document, { preview: true });

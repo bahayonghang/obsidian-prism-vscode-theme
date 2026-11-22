@@ -114,7 +114,7 @@ CSS 同时要求 `html[data-prism-host-appearance]` 和 `data-prism-host-palette
 
 安装目录中的 `out/obsidian-prism-desktop` 保存固定 loader、原始启动文件备份、归属记录、样式与独立恢复脚本。扩展升级后可刷新已拥有的样式；软件更新覆盖启动文件后，不会在后台擅自重新打补丁。
 
-恢复会核对备份与当前启动文件。若其他工具修改了文件，则保留该改动并报告冲突，不用旧备份覆盖新程序。请先查看 **Show Antigravity Compatibility Report** 中的路径与原因。
+恢复会核对备份与当前启动文件。若其他工具修改了文件，则保留该改动并报告冲突，不用旧备份覆盖新程序。可分享的 **Show Antigravity Compatibility Report** 只列状态与固定相对路径，省略本机绝对路径和可能包含用户名的文件系统错误。完整原因在 Theme Studio 本机诊断中显示；启用确认框会列出准确的启动文件与备份路径。恢复文件位于当前 Antigravity 安装的 `resources/app/out/obsidian-prism-desktop/`。
 
 正常卸载流程是先使用插件的“停用并恢复”，再卸载扩展。只在扩展管理页点击“禁用”不会删除应用启动钩子，已经加载的样式可能继续存在。loader 会检查对应扩展包是否仍存在，避免在扩展被移除后继续套用旧样式；这不等于自动从程序文件中删除启动钩子。独立恢复脚本用于扩展已移除时的恢复，仍执行同样的归属与哈希检查。
 

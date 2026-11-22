@@ -144,12 +144,14 @@ jobs:
           PRISM_EXPECTED_IDE_VERSION: ${{ matrix.ide }}
           PRISM_HOST_TEST_REPEATS: ${{ matrix.ide == '1.23.2' && '3' || '1' }}
       - name: Verify real startup and restore the original IDE entry
+        id: adapter_restore
         if: always() && steps.adapter_install.outcome == 'success'
         run: node scripts/manage-test-adapter.cjs restore
         env:
           VSCODE_EXECUTABLE_PATH: ${{ steps.ide.outputs.executable }}
           PRISM_EXPECTED_IDE_VERSION: ${{ matrix.ide }}
       - name: Exercise the production frame loader in actual Electron
+        if: always() && steps.adapter_restore.outcome == 'success'
         run: xvfb-run -a npm run test:adapter-electron
         env:
           VSCODE_EXECUTABLE_PATH: ${{ steps.ide.outputs.executable }}
