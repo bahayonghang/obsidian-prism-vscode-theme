@@ -21,6 +21,7 @@ Antigravity IDE is now the primary host, with standard VS Code compatibility ret
 - Theme Studio glow/corner controls remain local to the Studio; they do not imply a changed chat geometry.
 - Existing 0.1.0 settings exports import with the new options at their defaults. Exact theme scopes and manual-edit-preserving restoration remain in place.
 - Failed appearance commands report and reject the original error instead of resolving as if they succeeded. Background actions remain handled, and interrupted writes retain their restoration journal for a later retry.
+- Keep the current ownership journal in memory during an activation. Delayed VS Code storage notifications can no longer roll the live journal back and misclassify extension-owned colors as later manual edits.
 
 ### Validation scope
 

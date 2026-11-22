@@ -17,8 +17,12 @@ const systemKeys = ['workbench.preferredDarkColorTheme', 'workbench.preferredLig
 const highContrastKeys = ['workbench.preferredHighContrastColorTheme', 'workbench.preferredHighContrastLightColorTheme', 'window.autoDetectHighContrast'];
 const read = (key) => vscode.workspace.getConfiguration().inspect(key)?.globalValue;
 const write = (key, value) => vscode.workspace.getConfiguration().update(key, value, vscode.ConfigurationTarget.Global);
+// Legacy IDE background services can slow its serial settings-file writes.
+// Captured traces showed reset still progressing at the former 5-second limit.
+// Keep every value assertion and fail on expiry; do not retry failed scenarios.
+const hostTimeout = process.env.PRISM_EXPECTED_IDE_VERSION === '1.23.2' ? 15000 : 5000;
 
-async function until(predicate, description, timeout = 5000) {
+async function until(predicate, description, timeout = hostTimeout) {
   const deadline = Date.now() + timeout;
   while (Date.now() < deadline) {
     if (await predicate()) return;
@@ -32,7 +36,7 @@ async function command(name) {
   try {
     await Promise.race([
       vscode.commands.executeCommand(`obsidianPrism.${name}`),
-      new Promise((_, reject) => { timer = setTimeout(() => reject(new Error(`Command did not finish: ${name}`)), 5000); }),
+      new Promise((_, reject) => { timer = setTimeout(() => reject(new Error(`Command did not finish: ${name}`)), hostTimeout); }),
     ]);
   } finally {
     clearTimeout(timer);
@@ -53,6 +57,8 @@ exports.run = async function run() {
   // Bounded test-only diagnostics for the intermittent legacy configuration
   // failure. Capture only fixture preferences, selected colors and rule counts.
   const trace = [];
+  let firstUnexpectedConflict;
+  const tracedStores = new WeakSet();
   const record = entry => { trace.push(entry); if (trace.length > 32) trace.shift(); };
   const snapshot = (get = read) => {
     const colors = get('workbench.colorCustomizations') || {};
@@ -66,13 +72,26 @@ exports.run = async function run() {
     };
   };
   const compact = value => value?.present ? (Array.isArray(value.value) ? { rules: value.value.length } : value.value) : null;
-  const ownership = store => Object.entries(store.load()?.groups.colors || {}).flatMap(([key, root]) => root.leaves.filter(leaf => ['sideBar.background', 'input.border', 'textMateRules'].includes(leaf.path.at(-1))).map(leaf => ({ key, path: leaf.path, applied: compact(leaf.applied), pending: compact(leaf.pending), detached: !!leaf.detached })));
+  const ledgerOwnership = ledger => Object.entries(ledger?.groups.colors || {}).flatMap(([key, root]) => root.leaves.filter(leaf => ['sideBar.background', 'input.border', 'textMateRules'].includes(leaf.path.at(-1))).map(leaf => ({ key, path: leaf.path, applied: compact(leaf.applied), pending: compact(leaf.pending), detached: !!leaf.detached })));
+  const ownership = store => ledgerOwnership(store.load());
   const apply = AppearanceOwnership.prototype.apply;
   AppearanceOwnership.prototype.apply = async function (group, patches) {
+    if (!tracedStores.has(this.store)) {
+      const store = this.store;
+      const save = store.save;
+      store.save = async value => {
+        const expected = ledgerOwnership(value);
+        record({ event: 'save:start', expected });
+        await save.call(store, value);
+        record({ event: 'save:end', expected, observed: ownership(store) });
+      };
+      tracedStores.add(store);
+    }
     if (group === 'colors') record({ event: 'apply:start', state: snapshot(), ownership: ownership(this.store) });
     try {
       const conflicts = await apply.call(this, group, patches);
       if (group === 'colors') record({ event: 'apply:end', conflicts, state: snapshot(), ownership: ownership(this.store) });
+      if (!firstUnexpectedConflict && conflicts.some(key => key.includes('textMateRules') || labels.slice(1).some(label => key.includes(`[${label}]`)))) firstUnexpectedConflict = trace.slice(-16);
       return conflicts;
     } catch (error) {
       record({ event: 'apply:error', group, message: String(error), state: snapshot() });
@@ -91,7 +110,7 @@ exports.run = async function run() {
         const settings = JSON.parse(require('node:fs').readFileSync(process.env.PRISM_HOST_TEST_SETTINGS_FILE, 'utf8'));
         disk = snapshot(key => settings[key]);
       } catch (readError) { disk = { error: String(readError) }; }
-      console.error(`[host] Failure diagnostics: ${JSON.stringify({ check: name, current: snapshot(), disk, trace })}`);
+      console.error(`[host] Failure diagnostics: ${JSON.stringify({ check: name, current: snapshot(), disk, firstUnexpectedConflict, trace })}`);
       throw error;
     }
     checks += 1;

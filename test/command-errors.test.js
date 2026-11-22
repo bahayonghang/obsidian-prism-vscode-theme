@@ -196,3 +196,46 @@ test('failed Studio error delivery cannot replace the original command rejection
   await f.drain();
   assert.deepEqual(f.values[tokensKey], baseline[tokensKey]);
 });
+
+test('a delayed storage echo cannot detach newer owned token rules, while real manual edits remain authoritative', { timeout: 3000 }, async t => {
+  const f = await fixture(t, { 'obsidianPrism.accent': 'iris' });
+  const ledgerKey = 'appearanceOwnership.v1';
+  const olderStorageEcho = copy(f.storage[ledgerKey]);
+  assert.equal(f.values[tokensKey][scope].textMateRules.length, 2);
+
+  await f.userWrite('obsidianPrism.italicComments', true);
+  await f.command('restoreTypography');
+  await f.drain();
+  assert.equal(f.values[tokensKey][scope].textMateRules.length, 5);
+
+  const manualColors = copy(f.values[colorsKey]);
+  manualColors[scope]['button.background'] = '#AA5588';
+  await f.userWrite(colorsKey, manualColors);
+  const manualScope = '[Obsidian Prism — Warm Charcoal]';
+  const manualTokens = copy(f.values[tokensKey]);
+  manualTokens[manualScope].textMateRules.push({ name: 'Later user rule', scope: 'entity.name.tag', settings: { foreground: '#123456' } });
+  await f.userWrite(tokensKey, manualTokens);
+
+  // Model a stale self-origin storage broadcast replacing the Memento cache
+  // after a newer awaited update. Native settings remain fully up to date.
+  f.storage[ledgerKey] = olderStorageEcho;
+  await f.userWrite('obsidianPrism.accent', 'amber');
+  await f.command('restoreTypography');
+  await f.drain();
+  const ownedRules = f.values[tokensKey][scope].textMateRules;
+  assert.equal(ownedRules.find(rule => rule.name === 'Markdown URLs').settings.foreground, '#F6CB75', 'our newer rules must remain managed after an old storage echo');
+  assert.equal(f.values[colorsKey][scope]['button.background'], '#AA5588');
+  assert.deepEqual(f.values[tokensKey][manualScope], manualTokens[manualScope], 'a real manual token-array edit must still detach');
+
+  await f.command('resetCustomizations');
+  await f.drain();
+  const expectedColors = copy(baseline[colorsKey]);
+  expectedColors[scope]['button.background'] = '#AA5588';
+  const expectedTokens = copy(baseline[tokensKey]);
+  expectedTokens[manualScope] = manualTokens[manualScope];
+  assert.deepEqual(f.values[colorsKey], expectedColors);
+  assert.deepEqual(f.values[tokensKey], expectedTokens, 'reset recovers original rules except the genuinely edited scope');
+  assert.deepEqual(f.values[semanticKey], baseline[semanticKey]);
+  assert.equal(f.values['obsidianPrism.accent'], undefined);
+  assert.equal(f.values['obsidianPrism.italicComments'], undefined);
+});

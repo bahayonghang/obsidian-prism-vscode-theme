@@ -25,11 +25,21 @@ export function activate(context: vscode.ExtensionContext): void {
     onDidChange: reportChanges.event,
     provideTextDocumentContent: () => compatibilityReport,
   }));
+  const copyLedger = (value: Ledger | undefined): Ledger | undefined => value === undefined ? undefined : JSON.parse(JSON.stringify(value)) as Ledger;
+  // Memento can receive a delayed storage echo after an awaited update. Keep
+  // this serialized writer's successful snapshot authoritative for its lifetime;
+  // otherwise our own newer settings can be mistaken for later manual edits.
+  let ownershipLedger = copyLedger(context.globalState.get<Ledger>(LEDGER_KEY));
   const owner = new AppearanceOwnership({
     read: key => vscode.workspace.getConfiguration().inspect(key)?.globalValue,
     write: (key, value) => vscode.workspace.getConfiguration().update(key, value, vscode.ConfigurationTarget.Global),
-    load: () => context.globalState.get<Ledger>(LEDGER_KEY),
-    save: ledger => context.globalState.update(LEDGER_KEY, ledger),
+    load: () => copyLedger(ownershipLedger),
+    save: async ledger => {
+      // Persist before acknowledging either the write-ahead journal or final
+      // state. A failed save retains the previous recoverable local snapshot.
+      await context.globalState.update(LEDGER_KEY, copyLedger(ledger));
+      ownershipLedger = copyLedger(ledger);
+    },
   });
 
   function settings(): Settings {
