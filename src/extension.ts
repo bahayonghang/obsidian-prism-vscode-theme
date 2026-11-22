@@ -84,13 +84,22 @@ export function activate(context: vscode.ExtensionContext): void {
     outstanding = next.catch(() => undefined);
     return next;
   }
-  async function run(task: () => Promise<unknown>): Promise<void> {
+  async function run(task: () => Promise<unknown>, propagate = false): Promise<void> {
     try { await enqueue(task); }
     catch (error) {
       // A visible Studio status can otherwise hide host configuration failures
       // from the extension-host log, including an interrupted restoration.
       console.error('[Obsidian Prism] Appearance operation failed:', error);
-      await status(String(error instanceof Error ? error.message : error), String(error instanceof Error ? error.message : error), 'error');
+      try {
+        await status(String(error instanceof Error ? error.message : error), String(error instanceof Error ? error.message : error), 'error');
+      } catch (reportError) {
+        // A disposed Studio must not replace the original operation error or
+        // leave an unhandled rejection in a background configuration callback.
+        console.error('[Obsidian Prism] Could not report appearance failure:', reportError);
+      }
+      // Commands are awaitable API operations. Background/webview handlers
+      // consume reported failures; commands must let their callers detect them.
+      if (propagate) throw error;
     }
   }
   async function save(partial: Partial<Settings>, keys: readonly (keyof Settings)[] = SETTING_KEYS): Promise<void> {
@@ -253,21 +262,21 @@ export function activate(context: vscode.ExtensionContext): void {
   }
   async function chooseTheme(): Promise<void> {
     const picked = await vscode.window.showQuickPick(THEMES.map(theme => ({ label: theme.label, description: theme.description, id: theme.id })), { title: tr('Choose an Obsidian Prism theme', '选择 Obsidian Prism 主题') });
-    if (picked) await run(() => applyTheme(picked.id, {}));
+    if (picked) await run(() => applyTheme(picked.id, {}), true);
   }
 
   const commands: Record<string, () => unknown> = {
     openSettings: openStudio,
     chooseTheme,
     openNativeSettings: openNative,
-    showCompatibilityReport: () => run(showCompatibilityReport),
-    resetCustomizations: () => run(reset),
-    exportSettings: () => run(exportSettings),
-    importSettings: () => run(importSettings),
-    applyTypography: () => run(() => applyTypography({})),
-    restoreTypography: () => run(() => restore('typography')),
-    applySystemAppearance: () => run(() => applySystem({})),
-    restoreSystemAppearance: () => run(() => restore('system')),
+    showCompatibilityReport: () => run(showCompatibilityReport, true),
+    resetCustomizations: () => run(reset, true),
+    exportSettings: () => run(exportSettings, true),
+    importSettings: () => run(importSettings, true),
+    applyTypography: () => run(() => applyTypography({}), true),
+    restoreTypography: () => run(() => restore('typography'), true),
+    applySystemAppearance: () => run(() => applySystem({}), true),
+    restoreSystemAppearance: () => run(() => restore('system'), true),
   };
   for (const [name, callback] of Object.entries(commands)) context.subscriptions.push(vscode.commands.registerCommand(`obsidianPrism.${name}`, callback));
   context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(event => {

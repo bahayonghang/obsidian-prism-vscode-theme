@@ -87,6 +87,7 @@ jobs:
           VSCODE_EXECUTABLE_PATH: ${{ steps.ide.outputs.executable }}
           VSCODE_TEST_VERSION: '1.107.0'
           PRISM_EXPECTED_IDE_VERSION: ${{ matrix.ide }}
+          PRISM_HOST_TEST_REPEATS: ${{ matrix.ide == '1.23.2' && '3' || '1' }}
       - name: Upload source-contract reports
         if: always()
         uses: actions/upload-artifact@v4

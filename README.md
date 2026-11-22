@@ -72,6 +72,7 @@ code --install-extension artifacts/obsidian-prism-vscode-theme-0.2.0.vsix
 - **Reset Customizations / Reset Prism** 是完整重置：清除本扩展的偏好，并恢复仍由本扩展管理的配色、字体及系统明暗设置；它不会把整个 `settings.json` 清空。只需恢复字体或系统明暗时，使用下列对应命令。
 - 如使用过字体或系统明暗应用按钮，先分别执行 **Restore Typography**、**Restore System Appearance**，再卸载。
 - 恢复只处理仍等于本扩展上次写入值的设置。你之后手工改动的值会保留。
+- 应用或恢复失败时会报告错误，并保留恢复记录；解决提示中的设置写入问题后，可以再次执行相同操作。
 - 主题专属自定义可能在卸载后留在用户设置中；它们只匹配上述 Prism 主题，不影响其他主题。需要清理时，在卸载前执行恢复命令；已卸载时也可在用户 `settings.json` 中检查这些明确命名的块。
 - 工作区、语言专属设置或其他扩展可能优先覆盖用户设置；若某项看起来没生效，请检查 VS Code 原生设置中的覆盖来源。
 
@@ -112,7 +113,7 @@ npm run package
 
 在 VS Code 中打开仓库并按 F5，可以启动独立的 Extension Development Host 检查主题和面板。应重点检查：四套主题、中文与英文、窄窗口、键盘操作、导入导出、主题切换，以及修改已有设置后的应用与恢复。构建命令不等于 Marketplace 发布；发布需要维护者自己的 publisher 和发布权限。
 
-CI 除标准 VS Code 外，还会从官方固定版本包启动 **Antigravity IDE 1.23.2 / 2.8.0** 的隔离扩展宿主，验证主题设置、恢复与报告。Agent 扩展在这些自动测试中禁用，故该检查不等同于登录后的聊天界面截图验收。可复现的发行包颜色检查：
+CI 除标准 VS Code 外，还会从官方固定版本包启动 **Antigravity IDE 1.23.2 / 2.8.0** 的隔离扩展宿主，验证主题设置、恢复与报告。旧版用三个全新配置重复检查，任何一次失败都会使任务失败。启动参数请求禁用 Agent 扩展，但旧版仍可能启动内置服务；测试不会登录或发送对话，因此不等同于聊天界面的截图验收。可复现的发行包颜色检查：
 
 ```bash
 python3 scripts/prepare-antigravity.py --version 2.8.0

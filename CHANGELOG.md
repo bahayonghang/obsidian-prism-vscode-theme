@@ -20,6 +20,7 @@ Antigravity IDE is now the primary host, with standard VS Code compatibility ret
 - Modern composer cards derive from sidebar colors; legacy composer fill mixes editor background with fixed gray. Neither inspected composer uses `input.border`, even when the bridge forwards it.
 - Theme Studio glow/corner controls remain local to the Studio; they do not imply a changed chat geometry.
 - Existing 0.1.0 settings exports import with the new options at their defaults. Exact theme scopes and manual-edit-preserving restoration remain in place.
+- Failed appearance commands report and reject the original error instead of resolving as if they succeeded. Background actions remain handled, and interrupted writes retain their restoration journal for a later retry.
 
 ### Validation scope
 

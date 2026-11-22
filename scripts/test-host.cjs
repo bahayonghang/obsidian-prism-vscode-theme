@@ -45,10 +45,7 @@ const baseline = {
   'workbench.startupEditor': 'none',
 };
 
-async function main() {
-  if (!fs.existsSync(path.join(root, 'out', 'extension.js'))) {
-    throw new Error('Build the extension first: npm run build');
-  }
+async function runProfile(attempt, repetitions) {
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'prism-vscode-host-'));
   const userData = path.join(temp, 'user-data');
   const extensions = path.join(temp, 'extensions');
@@ -71,13 +68,14 @@ async function main() {
   // CI uses xvfb-run. Ozone headless is a best-effort fallback on Linux without
   // a display; an Electron platform failure is reported as failure, never skip.
   if (process.platform === 'linux' && !process.env.DISPLAY) launchArgs.push('--ozone-platform=headless');
-  // These jobs validate the theme in the real IDE without starting an Agent or
-  // requiring Google sign-in. They do not claim to render an authenticated chat.
+  // Request disabled Agent extensions, although legacy IDEs can still activate
+  // their built-in service. No test signs in or starts a conversation, and these
+  // API checks do not claim to render an authenticated chat.
   if (process.env.PRISM_EXPECTED_IDE_VERSION) {
     launchArgs.push('--disable-extension=google.google-antigravity', '--disable-extension=google.antigravity');
   }
 
-  console.log(`[host] Testing VS Code ${process.env.VSCODE_TEST_VERSION || 'stable'} with an isolated profile.`);
+  console.log(`[host] Testing VS Code ${process.env.VSCODE_TEST_VERSION || 'stable'} with an isolated profile (${attempt}/${repetitions}).`);
   let passed = false;
   try {
     await runTests({
@@ -100,6 +98,18 @@ async function main() {
       console.error(`[host] Failed test profile retained for diagnosis: ${temp}`);
     }
   }
+}
+
+async function main() {
+  if (!fs.existsSync(path.join(root, 'out', 'extension.js'))) {
+    throw new Error('Build the extension first: npm run build');
+  }
+  const requested = process.env.PRISM_HOST_TEST_REPEATS || '1';
+  if (!/^[1-3]$/.test(requested)) throw new Error('PRISM_HOST_TEST_REPEATS must be 1, 2 or 3.');
+  const repetitions = Number(requested);
+  // Each repetition has a new profile. A failure stops the run immediately;
+  // this exercises intermittent restoration failures without retrying them away.
+  for (let attempt = 1; attempt <= repetitions; attempt += 1) await runProfile(attempt, repetitions);
 }
 
 main().catch((error) => {
