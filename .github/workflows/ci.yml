@@ -1,0 +1,63 @@
+name: Theme extension CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: theme-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: VS Code ${{ matrix.vscode }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        vscode: ['1.96.4', stable]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install development dependencies
+        run: npm ci
+      - name: Build and test palette, settings, ownership, and webview contracts
+        run: npm test
+      - name: Check generated themes and manifests are committed
+        run: npm run check:generated
+      - name: Run actual VS Code extension-host integration tests
+        run: xvfb-run -a npm run test:host
+        env:
+          VSCODE_TEST_VERSION: ${{ matrix.vscode }}
+      - name: Install Chromium for Theme Studio interaction tests
+        if: matrix.vscode == 'stable'
+        run: |
+          npx playwright install --with-deps chromium
+          sudo apt-get install -y fonts-noto-cjk
+      - name: Check Theme Studio interactions and screenshots
+        if: matrix.vscode == 'stable'
+        run: npm run test:ui
+      - name: Package installable extension
+        run: npm run package
+      - name: Upload Theme Studio screenshots
+        if: always() && matrix.vscode == 'stable'
+        uses: actions/upload-artifact@v4
+        with:
+          name: theme-studio-screenshots
+          path: artifacts/studio-*.png
+          if-no-files-found: ignore
+      - name: Upload VSIX
+        uses: actions/upload-artifact@v4
+        with:
+          name: obsidian-prism-vscode-${{ matrix.vscode }}
+          path: artifacts/*.vsix
+          if-no-files-found: error

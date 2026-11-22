@@ -1,0 +1,12 @@
+.git/**
+.github/**
+.vscode/**
+.vscode-test/**
+node_modules/**
+test/**
+artifacts/**
+media/preview.svg
+media/icon.svg
+**/*.map
+**/*.vsix
+tsconfig.tsbuildinfo

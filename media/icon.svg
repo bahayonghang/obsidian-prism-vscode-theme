@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#20202A"/><stop offset="1" stop-color="#0B0B0E"/></linearGradient>
+    <linearGradient id="left" x2="1" y2="1"><stop stop-color="#A58AF8"/><stop offset="1" stop-color="#669DF6"/></linearGradient>
+    <linearGradient id="right" x2="1" y2="1"><stop stop-color="#E59377"/><stop offset="1" stop-color="#A58AF8"/></linearGradient>
+    <linearGradient id="bottom" x2="1" y2="1"><stop stop-color="#669DF6"/><stop offset="1" stop-color="#5BC4BE"/></linearGradient>
+  </defs>
+  <rect x="1" y="1" width="254" height="254" rx="48" fill="url(#bg)" stroke="#33333E" stroke-width="2"/>
+  <path d="M128 35 210 180 128 222 46 180Z" fill="#141418" stroke="#C4C4CE" stroke-opacity=".22"/>
+  <path d="m128 35-82 145 82-26Z" fill="url(#left)"/>
+  <path d="m128 35 82 145-82-26Z" fill="url(#right)" opacity=".87"/>
+  <path d="m46 180 82 42 82-42-82-26Z" fill="url(#bottom)" opacity=".8"/>
+  <path d="M128 35v119l82 26M128 154l-82 26m82-26v68" fill="none" stroke="#FFFFFF" stroke-opacity=".65" stroke-width="1.5"/>
+  <path d="m128 35-82 145 82 42 82-42Z" fill="none" stroke="#E3DAFF" stroke-opacity=".7" stroke-width="2"/>
+</svg>

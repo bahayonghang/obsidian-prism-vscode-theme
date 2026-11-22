@@ -1,0 +1,326 @@
+{
+  "name": "obsidian-prism-vscode-theme",
+  "displayName": "Obsidian Prism Theme",
+  "description": "Four Obsidian Prism color themes with a bilingual Theme Studio and reversible appearance controls. Independent VS Code port.",
+  "version": "0.1.0",
+  "publisher": "bahayonghang",
+  "license": "GPL-3.0-only",
+  "author": "bahayonghang",
+  "engines": {
+    "vscode": "^1.96.0",
+    "node": ">=22"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bahayonghang/obsidian-prism-vscode-theme.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bahayonghang/obsidian-prism-vscode-theme/issues"
+  },
+  "homepage": "https://github.com/bahayonghang/obsidian-prism-vscode-theme#readme",
+  "categories": [
+    "Themes"
+  ],
+  "keywords": [
+    "obsidian",
+    "prism",
+    "dark",
+    "light",
+    "warm",
+    "theme"
+  ],
+  "icon": "media/icon.png",
+  "galleryBanner": {
+    "color": "#0E0E11",
+    "theme": "dark"
+  },
+  "main": "./out/extension.js",
+  "browser": "./dist/browser.js",
+  "extensionKind": [
+    "ui",
+    "workspace"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": true
+    },
+    "virtualWorkspaces": true
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "obsidianPrism.openSettings",
+        "title": "%command.openSettings%",
+        "category": "Obsidian Prism"
+      },
+      {
+        "command": "obsidianPrism.chooseTheme",
+        "title": "%command.chooseTheme%",
+        "category": "Obsidian Prism"
+      },
+      {
+        "command": "obsidianPrism.openNativeSettings",
+        "title": "%command.openNativeSettings%",
+        "category": "Obsidian Prism"
+      },
+      {
+        "command": "obsidianPrism.applyTypography",
+        "title": "%command.applyTypography%",
+        "category": "Obsidian Prism"
+      },
+      {
+        "command": "obsidianPrism.restoreTypography",
+        "title": "%command.restoreTypography%",
+        "category": "Obsidian Prism"
+      },
+      {
+        "command": "obsidianPrism.applySystemAppearance",
+        "title": "%command.applySystemAppearance%",
+        "category": "Obsidian Prism"
+      },
+      {
+        "command": "obsidianPrism.restoreSystemAppearance",
+        "title": "%command.restoreSystemAppearance%",
+        "category": "Obsidian Prism"
+      },
+      {
+        "command": "obsidianPrism.exportSettings",
+        "title": "%command.exportSettings%",
+        "category": "Obsidian Prism"
+      },
+      {
+        "command": "obsidianPrism.importSettings",
+        "title": "%command.importSettings%",
+        "category": "Obsidian Prism"
+      },
+      {
+        "command": "obsidianPrism.resetCustomizations",
+        "title": "%command.resetCustomizations%",
+        "category": "Obsidian Prism"
+      }
+    ],
+    "configuration": {
+      "title": "Obsidian Prism",
+      "properties": {
+        "obsidianPrism.accent": {
+          "type": "string",
+          "enum": [
+            "default",
+            "cobalt",
+            "iris",
+            "amber",
+            "mono",
+            "custom"
+          ],
+          "default": "default",
+          "scope": "application",
+          "order": 0,
+          "markdownDescription": "%setting.accent%"
+        },
+        "obsidianPrism.customAccent": {
+          "type": "string",
+          "pattern": "^#[0-9a-fA-F]{6}$",
+          "default": "#A58AF8",
+          "scope": "application",
+          "order": 1,
+          "markdownDescription": "%setting.customAccent%"
+        },
+        "obsidianPrism.contrast": {
+          "type": "string",
+          "enum": [
+            "standard",
+            "high"
+          ],
+          "default": "standard",
+          "scope": "application",
+          "order": 2,
+          "markdownDescription": "%setting.contrast%"
+        },
+        "obsidianPrism.italicComments": {
+          "type": "boolean",
+          "default": false,
+          "scope": "application",
+          "order": 3,
+          "markdownDescription": "%setting.italicComments%"
+        },
+        "obsidianPrism.boldKeywords": {
+          "type": "boolean",
+          "default": false,
+          "scope": "application",
+          "order": 4,
+          "markdownDescription": "%setting.boldKeywords%"
+        },
+        "obsidianPrism.codeFont": {
+          "type": "string",
+          "enum": [
+            "default",
+            "jetbrains",
+            "cascadia",
+            "sfmono"
+          ],
+          "default": "default",
+          "scope": "application",
+          "order": 5,
+          "markdownDescription": "%setting.codeFont%"
+        },
+        "obsidianPrism.ligatures": {
+          "type": "string",
+          "enum": [
+            "inherit",
+            "on",
+            "off"
+          ],
+          "default": "inherit",
+          "scope": "application",
+          "order": 6,
+          "markdownDescription": "%setting.ligatures%"
+        },
+        "obsidianPrism.smoothCaret": {
+          "type": "string",
+          "enum": [
+            "inherit",
+            "on",
+            "off"
+          ],
+          "default": "inherit",
+          "scope": "application",
+          "order": 7,
+          "markdownDescription": "%setting.smoothCaret%"
+        },
+        "obsidianPrism.smoothScrolling": {
+          "type": "string",
+          "enum": [
+            "inherit",
+            "on",
+            "off"
+          ],
+          "default": "inherit",
+          "scope": "application",
+          "order": 8,
+          "markdownDescription": "%setting.smoothScrolling%"
+        },
+        "obsidianPrism.cornerStyle": {
+          "type": "string",
+          "enum": [
+            "sharp",
+            "balanced",
+            "soft"
+          ],
+          "default": "balanced",
+          "scope": "application",
+          "order": 9,
+          "markdownDescription": "%setting.cornerStyle%"
+        },
+        "obsidianPrism.ambientIntensity": {
+          "type": "number",
+          "enum": [
+            0,
+            35,
+            70,
+            100
+          ],
+          "default": 70,
+          "scope": "application",
+          "order": 10,
+          "markdownDescription": "%setting.ambientIntensity%"
+        },
+        "obsidianPrism.motion": {
+          "type": "string",
+          "enum": [
+            "off",
+            "subtle",
+            "standard",
+            "ultra"
+          ],
+          "default": "standard",
+          "scope": "application",
+          "order": 11,
+          "markdownDescription": "%setting.motion%"
+        },
+        "obsidianPrism.language": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "zh-CN",
+            "en"
+          ],
+          "default": "auto",
+          "scope": "application",
+          "order": 12,
+          "markdownDescription": "%setting.language%"
+        },
+        "obsidianPrism.preferredDark": {
+          "type": "string",
+          "enum": [
+            "obsidian",
+            "warm"
+          ],
+          "default": "obsidian",
+          "scope": "application",
+          "order": 13,
+          "markdownDescription": "%setting.preferredDark%"
+        },
+        "obsidianPrism.preferredLight": {
+          "type": "string",
+          "enum": [
+            "crystal",
+            "alabaster"
+          ],
+          "default": "crystal",
+          "scope": "application",
+          "order": 14,
+          "markdownDescription": "%setting.preferredLight%"
+        }
+      }
+    },
+    "themes": [
+      {
+        "id": "Obsidian Prism — Obsidian Dark",
+        "label": "Obsidian Prism — Obsidian Dark",
+        "uiTheme": "vs-dark",
+        "path": "./themes/obsidian-color-theme.json"
+      },
+      {
+        "id": "Obsidian Prism — Warm Charcoal",
+        "label": "Obsidian Prism — Warm Charcoal",
+        "uiTheme": "vs-dark",
+        "path": "./themes/warm-color-theme.json"
+      },
+      {
+        "id": "Obsidian Prism — Daylight Crystal",
+        "label": "Obsidian Prism — Daylight Crystal",
+        "uiTheme": "vs",
+        "path": "./themes/crystal-color-theme.json"
+      },
+      {
+        "id": "Obsidian Prism — Warm Alabaster",
+        "label": "Obsidian Prism — Warm Alabaster",
+        "uiTheme": "vs",
+        "path": "./themes/alabaster-color-theme.json"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p tsconfig.json",
+    "build": "npm run compile && node scripts/generate.cjs && node scripts/bundle.cjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run build && node --test test/*.test.js",
+    "test:host": "node scripts/test-host.cjs",
+    "test:ui": "node scripts/test-ui.cjs",
+    "vscode:prepublish": "npm run build",
+    "package": "node scripts/package.cjs",
+    "check:generated": "npm run build && git diff --exit-code -- themes package.json package.nls.json package.nls.zh-cn.json"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/vscode": "1.96.0",
+    "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "4.1.1",
+    "esbuild": "0.28.2",
+    "playwright": "^1.56.1",
+    "typescript": "5.9.3"
+  }
+}
