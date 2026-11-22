@@ -61,3 +61,36 @@ jobs:
           name: obsidian-prism-vscode-${{ matrix.vscode }}
           path: artifacts/*.vsix
           if-no-files-found: error
+
+  antigravity:
+    name: Antigravity IDE ${{ matrix.ide }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        ide: ['1.23.2', '2.8.0']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install and build the theme extension
+        run: npm ci && npm run build
+      - name: Verify official IDE archives and color source contracts
+        id: ide
+        run: python3 scripts/prepare-antigravity.py --version '${{ matrix.ide }}' --github-output "$GITHUB_OUTPUT"
+      - name: Run theme extension in an isolated actual Antigravity IDE host
+        run: xvfb-run -a npm run test:host
+        env:
+          VSCODE_EXECUTABLE_PATH: ${{ steps.ide.outputs.executable }}
+          VSCODE_TEST_VERSION: '1.107.0'
+          PRISM_EXPECTED_IDE_VERSION: ${{ matrix.ide }}
+      - name: Upload source-contract reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: antigravity-source-${{ matrix.ide }}
+          path: artifacts/antigravity-source-*.json
+          if-no-files-found: error

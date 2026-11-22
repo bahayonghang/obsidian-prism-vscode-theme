@@ -1,8 +1,10 @@
-# Obsidian Prism for VS Code
+# Obsidian Prism for Antigravity & VS Code
 
-[English](README.en.md) · [移植范围](docs/PORTING.md) · [实施规划](docs/PLAN.md) · [规划 issue #1](https://github.com/bahayonghang/obsidian-prism-vscode-theme/issues/1)
+[English](README.en.md) · [Antigravity 适配](docs/ANTIGRAVITY.md) · [移植范围](docs/PORTING.md) · [实施规划](docs/PLAN.md) · [规划 issue #2](https://github.com/bahayonghang/obsidian-prism-vscode-theme/issues/2)
 
-将 [RMvdesi / Obsidian Prism](https://github.com/RMvdesi/obsidian-prism) 的四套配色和外观设置带到 VS Code。这个独立移植版只包含主题相关功能：编辑器、侧栏、终端、语法配色，以及中英文 Theme Studio 设置面板。
+将 [RMvdesi / Obsidian Prism](https://github.com/RMvdesi/obsidian-prism) 的四套配色和外观设置带到 **Antigravity IDE**，同时兼容标准 VS Code。这个独立移植版只包含主题相关功能：对话侧栏、编辑器、终端、语法配色，以及中英文 Theme Studio 设置面板。
+
+**0.2.0 优先适配 Antigravity 对话外观。** 顶部工具栏与欢迎/对话区域跟随侧栏颜色；新版聊天输入框再由该底色生成卡片层次。设置面板提供对应的配色示意与宿主兼容性报告。不同版本的限制和逐项源码证据见 [Antigravity 适配说明](docs/ANTIGRAVITY.md)。
 
 **这是基于上游的非官方修改版，与 RMvdesi、Microsoft 或 Google 没有隶属或背书关系。** 原项目版权归 RMvdesi 及其上游贡献者所有；本项目采用 GPL-3.0-only。修改日期：2026-11-21。来源、修改说明及完整声明见 [UPSTREAM.md](UPSTREAM.md)、[LICENSE](LICENSE)、[NOTICE](NOTICE) 和 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
@@ -12,7 +14,7 @@
 
 ## 安装与开始使用
 
-需要 **VS Code 1.96.0 或以上**。本项目尚未发布到 Marketplace，可以从源码构建 VSIX：
+使用 **Antigravity IDE**，或 **VS Code 1.96.0 或以上**。本项目尚未发布到 Marketplace，可以从源码构建 VSIX：
 
 ```bash
 git clone https://github.com/bahayonghang/obsidian-prism-vscode-theme.git
@@ -20,14 +22,15 @@ cd obsidian-prism-vscode-theme
 npm ci
 npm test
 npm run package
-code --install-extension artifacts/obsidian-prism-vscode-theme-0.1.0.vsix
+code --install-extension artifacts/obsidian-prism-vscode-theme-0.2.0.vsix
 ```
 
-也可以在 VS Code 扩展页面的 `…` 菜单中选择 **Install from VSIX… / 从 VSIX 安装…**，打开上述文件。安装完成后：
+在 **Antigravity 的扩展页面**（或 VS Code）打开 `…` 菜单，选择 **Install from VSIX… / 从 VSIX 安装…**，打开上述文件。上面的 `code` 命令只安装到 VS Code；Antigravity 请使用自己的扩展页面。安装完成后：
 
 1. 打开命令面板，执行 **Preferences: Color Theme**，选择任意一个 `Obsidian Prism — …` 主题。
-2. 执行 **Obsidian Prism: Open Theme Studio**，调整强调色、对比度、注释和关键字样式。
-3. 字体和跟随系统明暗模式各有单独的应用、恢复按钮，需要时再使用。
+2. 执行 **Obsidian Prism: Open Theme Studio**，在“Antigravity 与侧栏”中选择底色：原始分层、与编辑区一致、淡强调色。先看对话配色示意，再点击应用。
+3. 调整强调色、对比度和代码样式。宿主信息卡可打开 **Show Antigravity Compatibility Report**，区分 IDE 产品版本与 VS Code 基础版本。
+4. 字体和跟随系统明暗模式各有单独的应用、恢复按钮，需要时再使用。
 
 安装本身不会替你切换主题。四个静态主题不依赖设置面板或扩展代码激活；设置面板及动态自定义由扩展运行时提供。项目包含桌面和浏览器运行入口；浏览器宿主的侧载方式与桌面 VSIX 安装不同，见 [移植说明](docs/PORTING.md#兼容性与构建)。
 
@@ -48,6 +51,8 @@ code --install-extension artifacts/obsidian-prism-vscode-theme-0.1.0.vsix
 | --- | --- | --- |
 | 强调色 | 默认、Cobalt、Iris、Amber、石墨单色、自定义十六进制颜色 | 四套 Prism 主题的原生界面 |
 | 对比度 | 标准、高 | Prism 主题；“高”是本项目配色选项，不是 VS Code 系统高对比主题 |
+| 侧栏与对话底色 | 原始分层、与编辑区一致、淡强调色 | Antigravity 对话背景、资源管理器与活动栏共用的原生颜色；不是仅聊天区域的覆盖 |
+| 原生输入边框 | 柔和、强调色 | 普通原生输入控件；**不控制 Antigravity 聊天输入框**，后者由宿主自行生成 |
 | 代码样式 | 斜体注释、加粗关键字 | Prism 主题的代码配色 |
 | 圆角 | Sharp / Balanced / Soft | **仅 Theme Studio 面板** |
 | 环境光 | 0 / 35 / 70 / 100 | **仅 Theme Studio 面板** |
@@ -79,12 +84,17 @@ code --install-extension artifacts/obsidian-prism-vscode-theme-0.1.0.vsix
 | `obsidianPrism.openSettings` | 打开 Theme Studio |
 | `obsidianPrism.chooseTheme` | 选择四套主题 |
 | `obsidianPrism.openNativeSettings` | 打开 VS Code 原生设置 |
+| `obsidianPrism.showCompatibilityReport` | 查看只读 Antigravity 版本、颜色路径与适配范围报告 |
 | `obsidianPrism.resetCustomizations` | 重置全部 Prism 偏好及仍受管理的外观设置 |
 | `obsidianPrism.exportSettings` / `obsidianPrism.importSettings` | 导出 / 导入设置 |
 | `obsidianPrism.applyTypography` / `obsidianPrism.restoreTypography` | 应用 / 恢复编辑器字体与动态设置 |
 | `obsidianPrism.applySystemAppearance` / `obsidianPrism.restoreSystemAppearance` | 应用 / 恢复系统明暗跟随 |
 
 ## 移植边界
+
+Antigravity **IDE**、独立 **App** 与 Google 的 **VS Code 扩展**是不同产品。上游针对 App 的安装方式不适用于这个 VSIX。已检查的新版 Google 前端从侧栏颜色生成聊天卡片；旧版 IDE 1.23.2 的输入背景则由编辑区颜色混合固定灰色生成。两者的聊天输入框都不直接使用 `input.border`，所以本项目不会把普通输入控件的边框选项宣传成聊天输入框控制。
+
+对话预览是根据检查过的客户端颜色公式绘制的**配色示意**，不是用户会话截图。它模拟新版的默认内部对比度；宿主自己的外观设置、其他主题覆盖或后续版本可改变实际结果。主题插件不读取聊天内容、凭据或模型状态。
 
 VS Code 的标准扩展 API 可以改变颜色和代码样式，但不允许主题直接改写整个工作台的 DOM 或 CSS。因此，全局玻璃模糊、悬浮面板圆角、全局光效与弹簧动画没有伪装成“已移植”：圆角、光效和动效明确限定在 Theme Studio 内。详见 [可行性分析与逐项映射](docs/PORTING.md)。
 
@@ -102,4 +112,12 @@ npm run package
 
 在 VS Code 中打开仓库并按 F5，可以启动独立的 Extension Development Host 检查主题和面板。应重点检查：四套主题、中文与英文、窄窗口、键盘操作、导入导出、主题切换，以及修改已有设置后的应用与恢复。构建命令不等于 Marketplace 发布；发布需要维护者自己的 publisher 和发布权限。
 
-验证记录和提交结果以 [issue #1](https://github.com/bahayonghang/obsidian-prism-vscode-theme/issues/1) 为准。文档不把未执行的宿主测试写成已通过。
+CI 除标准 VS Code 外，还会从官方固定版本包启动 **Antigravity IDE 1.23.2 / 2.8.0** 的隔离扩展宿主，验证主题设置、恢复与报告。Agent 扩展在这些自动测试中禁用，故该检查不等同于登录后的聊天界面截图验收。可复现的发行包颜色检查：
+
+```bash
+python3 scripts/prepare-antigravity.py --version 2.8.0
+```
+
+该开发脚本只把校验过 SHA-256 的官方包放进忽略的测试目录，不安装或修改你正在使用的 IDE。结果写入 `artifacts/antigravity-source-2.8.0.json`。
+
+当前验证记录和提交结果见 [issue #2](https://github.com/bahayonghang/obsidian-prism-vscode-theme/issues/2)，初版见 [issue #1](https://github.com/bahayonghang/obsidian-prism-vscode-theme/issues/1)。文档不把未执行的宿主测试写成已通过。

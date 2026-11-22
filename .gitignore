@@ -3,6 +3,7 @@ out/
 dist/
 artifacts/
 .vscode-test/
+.antigravity-test/
 *.vsix
 *.log
 .DS_Store

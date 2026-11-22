@@ -5,6 +5,8 @@ import { AppearanceOwnership, equal, type LeafPatch, type Ledger } from './owner
 import { PALETTES, THEMES, type PaletteId } from './palettes';
 import { createTheme } from './theme';
 import { getWebviewHtml } from './webview';
+import { detectHostAppearance, formatCompatibilityReport, type HostAppearanceInfo } from './host';
+import { createAntigravityPreview } from './conversation';
 
 const LEDGER_KEY = 'appearanceOwnership.v1';
 const SOURCES = { upstream: 'https://github.com/RMvdesi/obsidian-prism', port: 'https://github.com/bahayonghang/obsidian-prism-vscode-theme' };
@@ -15,6 +17,14 @@ export function activate(context: vscode.ExtensionContext): void {
   let panel: vscode.WebviewPanel | undefined;
   let writing = false;
   let pendingPrismChange = false;
+  let hostAppearance: Promise<HostAppearanceInfo> | undefined;
+  let compatibilityReport = '';
+  const reportUri = vscode.Uri.parse('obsidian-prism-report:/compatibility.txt');
+  const reportChanges = new vscode.EventEmitter<vscode.Uri>();
+  context.subscriptions.push(reportChanges, vscode.workspace.registerTextDocumentContentProvider('obsidian-prism-report', {
+    onDidChange: reportChanges.event,
+    provideTextDocumentContent: () => compatibilityReport,
+  }));
   const owner = new AppearanceOwnership({
     read: key => vscode.workspace.getConfiguration().inspect(key)?.globalValue,
     write: (key, value) => vscode.workspace.getConfiguration().update(key, value, vscode.ConfigurationTarget.Global),
@@ -36,10 +46,23 @@ export function activate(context: vscode.ExtensionContext): void {
     const light = vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Light || vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.HighContrastLight;
     return THEMES.find(theme => theme.label === activeTheme())?.id ?? (light ? settings().preferredLight : settings().preferredDark);
   }
+  function getHostAppearance(refresh = false): Promise<HostAppearanceInfo> {
+    if (refresh || !hostAppearance) hostAppearance = detectHostAppearance();
+    return hostAppearance;
+  }
   async function sendState(resetDraft = false): Promise<void> {
-    if (!panel) return;
+    const target = panel;
+    if (!target) return;
+    const metadata = getHostAppearance();
+    const host = await metadata;
+    if (panel !== target) return;
+    // A newer open/extension-change request can replace a slow metadata read.
+    // Preserve explicit draft reset semantics while retrying with the new one.
+    if (hostAppearance !== metadata) { await sendState(resetDraft); return; }
     const current = settings();
-    await panel.webview.postMessage({ type: 'state', settings: current, activeTheme: activeTheme(), themes: THEMES, palette: activePalette(), preview: createTheme(activePalette(), current), language: language(), autoLanguage: /^zh/i.test(vscode.env.language) ? 'zh-CN' : 'en', typographyApplied: owner.has('typography'), systemApplied: owner.has('system'), resetDraft });
+    const palette = activePalette();
+    const preview = createTheme(palette, current);
+    await target.webview.postMessage({ type: 'state', settings: current, activeTheme: activeTheme(), themes: THEMES, palette, preview, conversationPreview: createAntigravityPreview(preview), host, language: language(), autoLanguage: /^zh/i.test(vscode.env.language) ? 'zh-CN' : 'en', typographyApplied: owner.has('typography'), systemApplied: owner.has('system'), resetDraft });
   }
   async function status(en: string, zh: string, level: 'info' | 'error' = 'info'): Promise<void> {
     const message = tr(en, zh);
@@ -171,8 +194,21 @@ export function activate(context: vscode.ExtensionContext): void {
   }
   const openNative = () => vscode.commands.executeCommand('workbench.action.openSettings', '@ext:bahayonghang.obsidian-prism-vscode-theme');
 
+  async function showCompatibilityReport(): Promise<void> {
+    const host = await getHostAppearance(true);
+    compatibilityReport = formatCompatibilityReport(host, {
+      language: language(), activeTheme: activeTheme(),
+      colorCustomizations: vscode.workspace.getConfiguration('workbench').get<unknown>('colorCustomizations'),
+    });
+    reportChanges.fire(reportUri);
+    const document = await vscode.workspace.openTextDocument(reportUri);
+    await vscode.window.showTextDocument(document, { preview: true });
+    await sendState();
+  }
+
   function openStudio(): void {
-    if (panel) { panel.reveal(); return; }
+    hostAppearance = undefined;
+    if (panel) { panel.reveal(); void sendState(); return; }
     panel = vscode.window.createWebviewPanel('obsidianPrism.studio', 'Obsidian Prism · Theme Studio', vscode.ViewColumn.Active, { enableScripts: true, localResourceRoots: [vscode.Uri.joinPath(context.extensionUri, 'media')] });
     panel.webview.html = getWebviewHtml(panel.webview, context.extensionUri);
     const receiver = panel.webview.onDidReceiveMessage(async (message: unknown) => {
@@ -182,7 +218,8 @@ export function activate(context: vscode.ExtensionContext): void {
         try {
           if (!isPaletteId(message.palette)) throw new Error('Invalid palette');
           const draft = { ...settings(), ...validateSettings(message.settings) };
-          await panel?.webview.postMessage({ type: 'preview', preview: createTheme(message.palette, draft), requestId: message.requestId });
+          const preview = createTheme(message.palette, draft);
+          await panel?.webview.postMessage({ type: 'preview', preview, conversationPreview: createAntigravityPreview(preview), requestId: message.requestId });
         } catch (error) { await status(String(error instanceof Error ? error.message : error), String(error instanceof Error ? error.message : error), 'error'); }
         return;
       }
@@ -199,6 +236,7 @@ export function activate(context: vscode.ExtensionContext): void {
           case 'import': await importSettings(); break;
           case 'reset': await reset(); break;
           case 'openSettings': await openNative(); break;
+          case 'showCompatibilityReport': await showCompatibilityReport(); break;
           case 'openSource':
             if (message.source === 'upstream' || message.source === 'port') await vscode.env.openExternal(vscode.Uri.parse(SOURCES[message.source]));
             break;
@@ -217,6 +255,7 @@ export function activate(context: vscode.ExtensionContext): void {
     openSettings: openStudio,
     chooseTheme,
     openNativeSettings: openNative,
+    showCompatibilityReport: () => run(showCompatibilityReport),
     resetCustomizations: () => run(reset),
     exportSettings: () => run(exportSettings),
     importSettings: () => run(importSettings),
@@ -235,6 +274,10 @@ export function activate(context: vscode.ExtensionContext): void {
     else if (event.affectsConfiguration('workbench.colorTheme')) void sendState();
   }));
   context.subscriptions.push(vscode.window.onDidChangeActiveColorTheme(() => { void sendState(); }));
+  context.subscriptions.push(vscode.extensions.onDidChange(() => {
+    hostAppearance = undefined;
+    if (panel) void sendState();
+  }));
   context.subscriptions.push({ dispose: () => panel?.dispose() });
   // On clean install this computes no overrides and never changes the selected theme or typography.
   void run(async () => { await syncColors(); });

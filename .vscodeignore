@@ -2,6 +2,7 @@
 .github/**
 .vscode/**
 .vscode-test/**
+.antigravity-test/**
 node_modules/**
 test/**
 artifacts/**

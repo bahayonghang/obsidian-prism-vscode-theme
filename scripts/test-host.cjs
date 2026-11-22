@@ -71,6 +71,11 @@ async function main() {
   // CI uses xvfb-run. Ozone headless is a best-effort fallback on Linux without
   // a display; an Electron platform failure is reported as failure, never skip.
   if (process.platform === 'linux' && !process.env.DISPLAY) launchArgs.push('--ozone-platform=headless');
+  // These jobs validate the theme in the real IDE without starting an Agent or
+  // requiring Google sign-in. They do not claim to render an authenticated chat.
+  if (process.env.PRISM_EXPECTED_IDE_VERSION) {
+    launchArgs.push('--disable-extension=google.google-antigravity', '--disable-extension=google.antigravity');
+  }
 
   console.log(`[host] Testing VS Code ${process.env.VSCODE_TEST_VERSION || 'stable'} with an isolated profile.`);
   let passed = false;
@@ -83,6 +88,7 @@ async function main() {
       extensionTestsEnv: {
         PRISM_HOST_TEST_BASELINE: JSON.stringify(baseline),
         PRISM_HOST_TEST_ISOLATED: '1',
+        ...(process.env.PRISM_EXPECTED_IDE_VERSION ? { PRISM_EXPECTED_IDE_VERSION: process.env.PRISM_EXPECTED_IDE_VERSION } : {}),
       },
       launchArgs,
     });

@@ -1,8 +1,10 @@
-# Obsidian Prism for VS Code
+# Obsidian Prism for Antigravity & VS Code
 
-[中文](README.md) · [Porting scope](docs/PORTING.md) · [Implementation plan](docs/PLAN.md) · [Tracking issue #1](https://github.com/bahayonghang/obsidian-prism-vscode-theme/issues/1)
+[中文](README.md) · [Antigravity compatibility](docs/ANTIGRAVITY.md) · [Porting scope](docs/PORTING.md) · [Implementation plan](docs/PLAN.md) · [Tracking issue #2](https://github.com/bahayonghang/obsidian-prism-vscode-theme/issues/2)
 
-An independent VS Code adaptation of the four palettes and appearance controls from [Obsidian Prism by RMvdesi](https://github.com/RMvdesi/obsidian-prism). It provides editor, workbench, terminal and syntax colors with a Chinese/English Theme Studio.
+An independent adaptation of the four palettes and appearance controls from [Obsidian Prism by RMvdesi](https://github.com/RMvdesi/obsidian-prism), designed primarily for **Antigravity IDE** and compatible with standard VS Code. It provides conversation-sidebar, editor, workbench, terminal and syntax colors with a Chinese/English Theme Studio.
+
+**0.2.0 prioritizes Antigravity conversation appearance.** Its modern chat header and welcome canvas follow sidebar colors; the client derives composer cards from that canvas. Theme Studio includes a corresponding color schematic and a read-only host compatibility report. See [source evidence and version boundaries](docs/ANTIGRAVITY.md).
 
 **This is an unofficial modified distribution, not an official RMvdesi release and not affiliated with or endorsed by RMvdesi, Microsoft or Google.** Original copyright belongs to RMvdesi and upstream contributors. Licensed under GPL-3.0-only. Modification date: 2026-11-21. See [UPSTREAM.md](UPSTREAM.md), [LICENSE](LICENSE), [NOTICE](NOTICE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
@@ -12,7 +14,7 @@ This is a palette/layout illustration, not a captured VS Code screenshot. [Vecto
 
 ## Install
 
-Requires **VS Code 1.96.0 or later**. This project is not published to the Marketplace. Build an installable package from source:
+Use **Antigravity IDE**, or **VS Code 1.96.0 or later**. This project is not published to the Marketplace. Build an installable package from source:
 
 ```bash
 git clone https://github.com/bahayonghang/obsidian-prism-vscode-theme.git
@@ -20,14 +22,15 @@ cd obsidian-prism-vscode-theme
 npm ci
 npm test
 npm run package
-code --install-extension artifacts/obsidian-prism-vscode-theme-0.1.0.vsix
+code --install-extension artifacts/obsidian-prism-vscode-theme-0.2.0.vsix
 ```
 
-Alternatively, select **Extensions → … → Install from VSIX…** and open the generated file. Then:
+In **Antigravity IDE's Extensions view** (or VS Code), select **… → Install from VSIX…** and open the generated file. The `code` command above installs only into VS Code; use Antigravity's own Extensions view for that host. Then:
 
 1. Run **Preferences: Color Theme** and select an `Obsidian Prism — …` theme.
-2. Run **Obsidian Prism: Open Theme Studio** to configure accent, contrast and syntax styling.
-3. Apply optional typography and system appearance settings separately when wanted.
+2. Run **Obsidian Prism: Open Theme Studio** and choose layered, unified or accent-tinted sidebar surfaces. Preview the conversation color schematic, then apply.
+3. Configure accent, contrast and syntax styling. Use **Show Antigravity Compatibility Report** to distinguish the IDE product version from its VS Code base version.
+4. Apply optional typography and system appearance settings separately when wanted.
 
 Installation does not automatically select a theme. All four static color themes work without activating extension code; the companion runtime provides customization. Desktop and browser entries are included. Browser extension sideloading is a separate workflow from desktop VSIX installation; see [porting notes](docs/PORTING.md#兼容性与构建).
 
@@ -48,6 +51,8 @@ Base colors are taken from the pinned upstream `style.css`. VS Code UI, TextMate
 | --- | --- | --- |
 | Accent | Default, Cobalt, Iris, Amber, Graphite Monochrome, custom hex | Native Prism themes |
 | Contrast | Standard / High | Native Prism palettes; this is not a replacement for VS Code high-contrast themes |
+| Sidebar & conversation surface | Layered / Unified / Tinted | Shared native sidebar, Explorer and Activity Bar colors; not a chat-only override |
+| Native input outline | Subtle / Accent | Ordinary native inputs; **does not control the Antigravity composer**, whose frame is derived by its client |
 | Syntax | Italic comments / bold keywords | Native Prism themes |
 | Corners | Sharp / Balanced / Soft | **Theme Studio only** |
 | Ambient glow | 0 / 35 / 70 / 100 | **Theme Studio only** |
@@ -79,6 +84,7 @@ Commands use the `Obsidian Prism` prefix. Stable command IDs:
 | `obsidianPrism.openSettings` | Open Theme Studio |
 | `obsidianPrism.chooseTheme` | Choose a theme |
 | `obsidianPrism.openNativeSettings` | Open native VS Code settings |
+| `obsidianPrism.showCompatibilityReport` | Read-only host versions, color path and compatibility boundaries |
 | `obsidianPrism.resetCustomizations` | Reset all Prism preferences and owned appearance settings |
 | `obsidianPrism.exportSettings` / `obsidianPrism.importSettings` | Export / import extension settings |
 | `obsidianPrism.applyTypography` / `obsidianPrism.restoreTypography` | Apply / restore typography and editor motion |
@@ -86,10 +92,16 @@ Commands use the `Obsidian Prism` prefix. Stable command IDs:
 
 ## Scope and development
 
+Antigravity **IDE**, the standalone **App**, and Google's **VS Code extension** are separate products. The upstream App installation process does not apply to this VSIX. The inspected modern client derives composer cards from sidebar colors; legacy IDE 1.23.2 mixes editor background with fixed gray. Neither inspected composer consumes `input.border`. The native input outline setting is therefore explicitly separate from Antigravity chat.
+
+The conversation preview is a **color schematic**, not a captured user session. It models the inspected modern client at default internal contrast. Host appearance preferences, other color overrides and future client versions can change the result. This theme reads no conversations, credentials or model state.
+
 VS Code's supported extension API does not expose the workbench DOM or arbitrary CSS. Whole-window blur, custom shell geometry and global spring animations are therefore not advertised as native-theme features. Corners, glow and motion are confined to Theme Studio. See the [feature mapping](docs/PORTING.md).
 
 Quota telemetry, thought translation, model controls, chat management, mascots, the embedded browser and file viewer are excluded. The runtime makes no network requests, patches no application files, opens no debugging port and launches no background service.
 
 Use Node.js 22 LTS or a newer supported release. `npm test` and `npm run package` are the verification and packaging entry points. Open the repository in VS Code and press F5 for an Extension Development Host. Check all palettes, both panel languages, keyboard navigation, narrow layouts, import/export, and apply/restore behavior with existing manual settings. Packaging does not publish the extension; publishing requires the maintainer's publisher registration and credentials.
 
-Actual verification evidence and completion are recorded in [issue #1](https://github.com/bahayonghang/obsidian-prism-vscode-theme/issues/1). Host tests that have not run must not be described as passed.
+CI also uses official, SHA-256-pinned **Antigravity IDE 1.23.2 and 2.8.0** executables with isolated profiles to verify theme APIs, settings, restoration and reports. Agent extensions are disabled during these host tests: this is not an authenticated chat screenshot test. `python3 scripts/prepare-antigravity.py --version 2.8.0` repeats the distribution color-contract checks and writes `artifacts/antigravity-source-2.8.0.json`. It downloads into an ignored test cache without installing or modifying your normal IDE.
+
+Actual verification evidence and completion are recorded in [issue #2](https://github.com/bahayonghang/obsidian-prism-vscode-theme/issues/2); initial port history is in [issue #1](https://github.com/bahayonghang/obsidian-prism-vscode-theme/issues/1). Host tests that have not run must not be described as passed.

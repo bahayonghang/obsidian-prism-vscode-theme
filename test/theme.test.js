@@ -163,7 +163,7 @@ test('generation does not mutate caller options or the shared upstream palette',
   theme.colors['editor.background'] = '#FFFFFF';
   assert.equal(JSON.stringify(PALETTES), original);
   assert.equal(createTheme('obsidian').colors['editor.background'], '#0E0E11');
-  assert.deepEqual(DEFAULT_THEME_OPTIONS, { accent: 'default', customAccent: '#A58AF8', contrast: 'standard', italicComments: false, boldKeywords: false });
+  assert.deepEqual(DEFAULT_THEME_OPTIONS, { accent: 'default', customAccent: '#A58AF8', contrast: 'standard', sidebarSurface: 'layered', inputBorder: 'subtle', italicComments: false, boldKeywords: false });
 });
 
 test('upstream identity, license, source pin, and modification notices remain visible', () => {

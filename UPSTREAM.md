@@ -1,6 +1,6 @@
 # Upstream provenance and modification notice
 
-**This is an independently maintained, unofficial modified distribution for VS Code. It is not an official Obsidian Prism release and is not affiliated with or endorsed by RMvdesi, Microsoft or Google.**
+**This is an independently maintained, unofficial modified distribution for Antigravity IDE and VS Code. It is not an official Obsidian Prism release and is not affiliated with or endorsed by RMvdesi, Microsoft or Google.**
 
 ## Original work
 
@@ -16,7 +16,7 @@ Original upstream contributors and component notices remain in [THIRD_PARTY_NOTI
 
 ## Downstream work
 
-- Project: **Obsidian Prism for VS Code**
+- Project: **Obsidian Prism for Antigravity & VS Code**
 - Repository: <https://github.com/bahayonghang/obsidian-prism-vscode-theme>
 - Maintainer: **bahayonghang**
 - Downstream copyright: **Copyright (C) 2026 bahayonghang and contributors**
@@ -30,7 +30,8 @@ Modified/adapted material and additions:
 3. Reimplemented appearance controls with VS Code configuration APIs and a local settings webview. Replaced model-dependent accent following with a palette default. Added custom accent, contrast and syntax-style options.
 4. Limited corners, glow and custom motion to the settings panel because supported VS Code extensions cannot inject arbitrary workbench CSS. Added explicit apply/restore flows for editor typography and system appearance.
 5. Added setting ownership/restoration, validated import/export, localization, desktop/browser bundles, packaging, tests and documentation.
-6. Excluded upstream application injection, background services, telemetry, thought translation, model controls, chat features, mascots, browser and file viewers.
+6. Added Antigravity-native shared sidebar controls, a color-only conversation model, and read-only host compatibility reporting. These are independently implemented adapters based on observed color contracts; no Google application code or binaries are redistributed. See [Antigravity evidence](docs/ANTIGRAVITY.md).
+7. Excluded upstream application injection, background services, telemetry, thought translation, model controls, chat management, mascots, browser and file viewers.
 
 The complete [LICENSE](LICENSE), [NOTICE](NOTICE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) are copied **verbatim** from the pinned upstream commit. The notices here supplement them; they do not replace or alter them. New source files and generated artifacts should retain a clear derivation/modification notice where their format permits it, with this document included in the distribution.
 

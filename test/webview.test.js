@@ -43,12 +43,35 @@ test('appearance controls explain native scope and preserve visible upstream att
   const html = getWebviewHtml(webview, uri);
   assert.match(html, /RMvdesi/);
   assert.match(html, /GPL-3.0-only/);
-  assert.match(html, /Independent VS Code port/);
-  assert.match(html, /They do not change the VS Code window/);
+  assert.match(html, /Independent Antigravity IDE \/ VS Code port/);
+  assert.match(html, /They do not change the Antigravity main window, conversation layout or VS Code window/);
   assert.match(html, /editor-wide user settings/);
-  for (const id of ['apply', 'apply-typography', 'restore-typography', 'apply-system', 'restore-system', 'import', 'export', 'reset']) {
+  for (const id of ['apply', 'apply-typography', 'restore-typography', 'apply-system', 'restore-system', 'import', 'export', 'reset', 'compatibility-report']) {
     assert.ok(html.includes(`id="${id}"`), `${id} action is available`);
   }
+});
+
+test('Antigravity preview identifies its limits and exposes shared native controls', () => {
+  const html = getWebviewHtml(webview, uri);
+  assert.match(html, /ANTIGRAVITY IDE/);
+  assert.match(html, /data-setting="sidebarSurface"/);
+  assert.match(html, /data-setting="inputBorder"/);
+  assert.match(html, /Explorer and other sidebars change too/);
+  assert.match(html, /not a host screenshot/);
+  assert.match(html, /outside the Antigravity composer/);
+  assert.match(html, /Modern Antigravity derives its composer from this canvas/);
+  assert.match(html, /Legacy IDE 1\.23\.2 uses the editor background and fixed gray/);
+  assert.match(html, /id="preview-conversation-tab" role="tab"[^>]+aria-selected="true"/);
+  assert.match(html, /id="editor-preview"[^>]+hidden/);
+  assert.doesNotMatch(html, /id="conversation-preview"[^>]+hidden/);
+  const css = fs.readFileSync(path.join(__dirname, '../media/settings.css'), 'utf8');
+  assert.match(css, /\.conversation-composer \{[^}]+border-radius: 12px/);
+  assert.doesNotMatch(css, /\.live-preview::after/);
+  assert.doesNotMatch(css, /\.conversation[^}]*\{[^}]*var\(--radius/);
+  const js = fs.readFileSync(path.join(__dirname, '../media/settings.js'), 'utf8');
+  assert.match(js, /function showConversationPreview/);
+  assert.match(js, /'card-border': 'cardBorder'/);
+  assert.doesNotMatch(js, /colors\['input\.(background|foreground|border|placeholderForeground)'\]/);
 });
 
 test('client renders untrusted host text without HTML sinks or network APIs', () => {

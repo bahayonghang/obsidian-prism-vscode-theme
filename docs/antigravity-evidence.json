@@ -1,0 +1,716 @@
+{
+  "schemaVersion": 1,
+  "auditedAtUtc": "2026-11-22",
+  "targetRelease": "0.2.0",
+  "issueUrl": "https://github.com/bahayonghang/obsidian-prism-vscode-theme/issues/2",
+  "scope": "Antigravity IDE normal desktop text-conversation sidebar; native theme API only.",
+  "verification": {
+    "method": "Read-only static audit of official distribution artifacts and actual embedded frontend consumers.",
+    "officialCliManifestDigestVerified": true,
+    "embeddedFrontendZipSizesAndCrcVerified": true,
+    "loggedInChatVisualVerification": "not performed",
+    "hostIntegrationCi": "Reported separately in project CI and issue #2; this source audit does not assert those jobs passed.",
+    "executedInstallerOrCli": false,
+    "redistributesGoogleSources": false
+  },
+  "officialSources": [
+    {
+      "id": "changelog",
+      "url": "https://antigravity.google/docs/changelog"
+    },
+    {
+      "id": "extension-docs",
+      "url": "https://antigravity.google/docs/ide/extensions/vscode/"
+    },
+    {
+      "id": "sidebar-docs",
+      "url": "https://antigravity.google/docs/ide/agent-side-panel/"
+    },
+    {
+      "id": "marketplace",
+      "url": "https://marketplace.visualstudio.com/items?itemName=Google.google-antigravity"
+    },
+    {
+      "id": "legacy-release",
+      "url": "https://antigravity.google/releases?tab=ide&version=1.23.2"
+    },
+    {
+      "id": "vscode-webview-theming",
+      "url": "https://code.visualstudio.com/api/extension-guides/webview#theming-webview-content"
+    },
+    {
+      "id": "vscode-theme-colors",
+      "url": "https://code.visualstudio.com/api/references/theme-color"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "ide-2.8.0",
+      "kind": "official-ide-archive",
+      "sourceUrl": "https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/2.8.0-6733682917113856/linux-x64/Antigravity%20IDE.tar.gz",
+      "archive": {
+        "filename": "antigravity-ide-2.8.0-linux-x64.tar.gz",
+        "bytes": 195291447,
+        "sha256": "7baa36baab285cb46101af958b8f7be6305458db9a44d8b3d0938d61f38597d7"
+      },
+      "product": {
+        "nameLong": "Antigravity IDE",
+        "version": "1.107.0",
+        "ideVersion": "2.8.0",
+        "commit": "8dc5315afe097a21a6cb38dda76edc0835dfabfa",
+        "date": "2026-11-19T00:10:16.000Z"
+      },
+      "files": [
+        {
+          "path": "product.json",
+          "bytes": 42007,
+          "sha256": "91b2537006562b89549d3d57532febd49858447f3718028049ab45127d737063"
+        },
+        {
+          "path": "package.json",
+          "bytes": 9379,
+          "sha256": "9539f133d9c3ae8419f5093626f010ec25587728b892376226d3622ff6f643b2"
+        },
+        {
+          "path": "extensions/agy/package.json",
+          "bytes": 18196,
+          "sha256": "2dd171f5a96b86c4d0830851c144f4f882e45f070343ae5a6212b091412184b2"
+        },
+        {
+          "path": "extensions/agy/dist/extension.js",
+          "bytes": 1462852,
+          "sha256": "d4149138146765a7331650ed4fddc064b1267901ef26a7f03b6be20220176979"
+        },
+        {
+          "path": "extensions/agy/vscode/extension.js",
+          "bytes": 4533239,
+          "sha256": "580764cde1939fe8d5dd90c36b9a84df3be56c52188524c4d25ab04288094a98"
+        },
+        {
+          "path": "extensions/agy/bridge.js",
+          "bytes": 1952437,
+          "sha256": "d3011ecb28366a9b8c8ea591a1205002cfa0c22d734e058d7fa27b76f98f4638"
+        }
+      ]
+    },
+    {
+      "id": "ide-1.23.2",
+      "kind": "official-ide-archive",
+      "sourceUrl": "https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/1.23.2-4781536860569600/linux-x64/Antigravity.tar.gz",
+      "archive": {
+        "filename": "antigravity-theme-audit-legacy-1.23.2.tar.gz",
+        "bytes": 228662083,
+        "sha256": "5232a4048ff4fa15685d9a981ba4fba573e297f3efc9b76f638e794baf775725"
+      },
+      "product": {
+        "nameLong": "Antigravity",
+        "version": "1.107.0",
+        "ideVersion": "1.23.2",
+        "commit": "15487b3041e65228cae24980a3f796c905ef582c",
+        "date": "2026-04-16T08:28:19.366Z"
+      },
+      "files": [
+        {
+          "path": "product.json",
+          "bytes": 41801,
+          "sha256": "9f03b54ef994f7b395e79eba082833ce8cce77a4bcf0e80d7672f6594545e7c9"
+        },
+        {
+          "path": "package.json",
+          "bytes": 9245,
+          "sha256": "154cd8d32dd8787ab53ed018cddcdda5b78f57a02613154a9c443f3313d6bd25"
+        },
+        {
+          "path": "out/vs/workbench/workbench.desktop.main.css",
+          "bytes": 1185869,
+          "sha256": "7d333a66dfe98a8b218e87dfc32f0ca1ef1d7afb701aeee61f72cd16a1760bd0"
+        },
+        {
+          "path": "out/vs/workbench/workbench.desktop.main.js",
+          "bytes": 24176674,
+          "sha256": "ea1037e96ba164009c8965feb83d9d0d5fd45b39fa83c592ab57302489c590a5"
+        },
+        {
+          "path": "out/vs/code/electron-browser/workbench/workbench.html",
+          "bytes": 1752,
+          "sha256": "1e0a5e996f7c8e63d7e808d1c26ebd4478d1797e15fba77f9eec2eb2baa7b3ff"
+        },
+        {
+          "path": "extensions/antigravity/package.json",
+          "bytes": 8135,
+          "sha256": "8972375d31d8d89bffc34d359e950d6f624163451aff591fd1a8782fe30376b5"
+        },
+        {
+          "path": "extensions/antigravity/cascade-panel.html",
+          "bytes": 127,
+          "sha256": "298105b05e82579f6ff6591a34b8823611576a34805331aba66d900cc2cd1e31"
+        }
+      ]
+    },
+    {
+      "id": "cli-1.5.14",
+      "kind": "official-cli-with-embedded-frontend",
+      "version": "1.5.14",
+      "sourceUrl": "https://storage.googleapis.com/antigravity-public/antigravity-cli/1.5.14-5302690847260672/linux-x64/cli_linux_x64.tar.gz",
+      "discovery": {
+        "installScriptUrl": "https://antigravity.google/cli/install.sh",
+        "installScriptSha256": "62966c07365423bd4dc209355060744058fb30d60f5323e2d360e39de64e5042",
+        "manifestUrl": "https://antigravity-cli-auto-updater-974169037036.us-central1.run.app/manifests/linux_amd64.json",
+        "manifestSha256": "ed63e74e25e17882126d722111b8d4d00a079a4399f17e5196f4c33c4f45e1a5",
+        "manifestData": {
+          "version": "1.5.14",
+          "url": "https://storage.googleapis.com/antigravity-public/antigravity-cli/1.5.14-5302690847260672/linux-x64/cli_linux_x64.tar.gz",
+          "sha512": "83311d3f354567612dc16c1ae2ea9b503d6f6833aa4e138d39aa229da3f3bb99b0e4d7cca0bce4796b0060d6a51d8113eb7449ed5dc0e7900bf217107ea5bff9"
+        },
+        "ideUsesSameReleaseBase": true
+      },
+      "archive": {
+        "filename": "cli_linux_x64.tar.gz",
+        "bytes": 101195950,
+        "sha256": "d58386322d2073e96b33f7cc32b4e9ae2db6228f58440369725967b2de48c7b5",
+        "sha512": "83311d3f354567612dc16c1ae2ea9b503d6f6833aa4e138d39aa229da3f3bb99b0e4d7cca0bce4796b0060d6a51d8113eb7449ed5dc0e7900bf217107ea5bff9",
+        "matchesOfficialManifestSha512": true
+      },
+      "binary": {
+        "path": "antigravity",
+        "bytes": 273240776,
+        "sha256": "37873b8062391b6202a3d3199ec012abc9e53aab720d26cd65699441497d8c94",
+        "executed": false
+      },
+      "files": [
+        {
+          "path": "main.js",
+          "bytes": 12773071,
+          "sha256": "80bae21f2cf90c2a2fdad3aa6272b93437eea12f9e830fa80c96b4f830f4af61",
+          "embeddedArchive": {
+            "container": "antigravity",
+            "entryName": "main.js",
+            "localHeaderByteOffset": 228579209,
+            "dataByteOffset": 228579246,
+            "compressionMethod": 8,
+            "compressedBytes": 3817554,
+            "uncompressedBytes": 12773071,
+            "crc32": "8ac04b9c",
+            "sizeAndCrcVerified": true
+          }
+        },
+        {
+          "path": "compiled_tailwind.css",
+          "bytes": 367505,
+          "sha256": "ceb6532a3e6163475182dc62eef1fcf9856e8c32cb2a51f257d8c2a0f79f7ba8",
+          "embeddedArchive": {
+            "container": "antigravity",
+            "entryName": "compiled_tailwind.css",
+            "localHeaderByteOffset": 228489995,
+            "dataByteOffset": 228490046,
+            "compressionMethod": 8,
+            "compressedBytes": 44117,
+            "uncompressedBytes": 367505,
+            "crc32": "7ba2dfdc",
+            "sizeAndCrcVerified": true
+          }
+        },
+        {
+          "path": "jetbox.css",
+          "bytes": 95543,
+          "sha256": "c1938159348c6986ab39baf0784812a973d28f321ec11a2445e780404118df20",
+          "embeddedArchive": {
+            "container": "antigravity",
+            "entryName": "jetbox.css",
+            "localHeaderByteOffset": 228554417,
+            "dataByteOffset": 228554457,
+            "compressionMethod": 8,
+            "compressedBytes": 16858,
+            "uncompressedBytes": 95543,
+            "crc32": "54c69a65",
+            "sizeAndCrcVerified": true
+          }
+        },
+        {
+          "path": "index.html",
+          "bytes": 3798,
+          "sha256": "118dcfc4e881a41715f2f363ced8ae9afa6b4d7c1acf312da194cb6fab50f768",
+          "embeddedArchive": {
+            "container": "antigravity",
+            "entryName": "index.html",
+            "localHeaderByteOffset": 228552715,
+            "dataByteOffset": 228552755,
+            "compressionMethod": 8,
+            "compressedBytes": 1662,
+            "uncompressedBytes": 3798,
+            "crc32": "91d1debe",
+            "sizeAndCrcVerified": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "marketplace-extension-1.13.0",
+      "kind": "official-marketplace-vsix",
+      "extensionId": "Google.google-antigravity",
+      "version": "1.13.0",
+      "sourceUrl": "https://marketplace.visualstudio.com/_apis/public/gallery/publishers/Google/vsextensions/google-antigravity/latest/vspackage",
+      "sourceNote": "Mutable latest endpoint; exact inspected package identified by version and content hash. HTTP gzip content encoding was decoded before recording the VSIX hash.",
+      "archive": {
+        "path": "google.google-antigravity-1.13.0.vsix",
+        "bytes": 4420943,
+        "sha256": "b786fb6ec1babfdb7b2c3e5acabd951483539d287923a63cda7e0157bcf04704"
+      },
+      "files": [
+        {
+          "path": "extension/package.json",
+          "bytes": 30912,
+          "sha256": "875a74ab6e8f36f5f893d7f669196d83f56b122fab42a414beffeb47b9c6c3d7"
+        },
+        {
+          "path": "extension/bridge.js",
+          "bytes": 2012594,
+          "sha256": "432d64387a6817c6b5d4a5a71c849f02069f0c3b28a1b7acc450cd5bba5bd471"
+        },
+        {
+          "path": "extension/extension.js",
+          "bytes": 4654198,
+          "sha256": "d77a2fd3c63892c44b3d29e7b72618d688c65217312314b8278852def5984284"
+        }
+      ]
+    }
+  ],
+  "modernBridge": {
+    "bundledExtension": {
+      "id": "google.google-antigravity",
+      "version": "1.12.0"
+    },
+    "mainChatLocation": "sideBar",
+    "internalAliasesAreRegisteredThemeColorIds": false,
+    "internalAliases": {
+      "agy.background": "sideBar.background -> editor.background -> #1e1e1e",
+      "agy.foreground": "sideBar.foreground -> editor.foreground -> #cccccc"
+    },
+    "transmittedColorIds": [
+      "editor.background",
+      "editor.foreground",
+      "foreground",
+      "agy.background",
+      "agy.foreground",
+      "sideBar.background",
+      "sideBarTitle.foreground",
+      "textLink.foreground",
+      "textLink.activeForeground",
+      "button.background",
+      "button.foreground",
+      "button.hoverBackground",
+      "input.background",
+      "input.foreground",
+      "input.border",
+      "progressBar.background",
+      "focusBorder",
+      "descriptionForeground",
+      "icon.foreground",
+      "badge.background",
+      "badge.foreground",
+      "tab.activeBackground",
+      "tab.activeForeground",
+      "tab.inactiveBackground",
+      "tab.inactiveForeground",
+      "activityBar.background",
+      "activityBar.foreground",
+      "statusBar.background",
+      "statusBar.foreground",
+      "titleBar.activeBackground",
+      "titleBar.activeForeground",
+      "list.hoverBackground",
+      "list.activeSelectionBackground",
+      "list.activeSelectionForeground",
+      "scrollbarSlider.background",
+      "scrollbarSlider.hoverBackground"
+    ],
+    "foregroundRemapping": [
+      "editor.foreground",
+      "foreground"
+    ],
+    "backgroundRemapping": [
+      "editor.background"
+    ],
+    "notTransmitted": [
+      "chat.*",
+      "inlineChat.*",
+      "agentsChatInput.*",
+      "input.placeholderForeground"
+    ],
+    "sideBarForegroundRelay": "Indirectly through the agy.foreground alias."
+  },
+  "modernSemanticModel": {
+    "appliesWhen": "Host editor theme mode, ordinary desktop text composer; standalone App glass styles are not enabled.",
+    "B": "sideBar.background (bridge fallback: editor.background, then #1e1e1e)",
+    "F": "sideBar.foreground (bridge fallback: editor.foreground, then #cccccc)",
+    "mixSpace": "srgb",
+    "contrast": {
+      "defaultInternalValue": 1,
+      "independentOfPrismContrastSetting": true,
+      "1": {
+        "secondaryDarkForeground": 0.12,
+        "secondaryLightForeground": 0.06,
+        "mutedForeground": 0.025,
+        "cardDarkForeground": 0.05,
+        "cardLightBackground": 0.7,
+        "cardBorderDarkForeground": 0.05,
+        "cardBorderLightForeground": 0.075,
+        "genericBorderDarkAlpha": 0.05,
+        "genericBorderLightAlpha": 0.075
+      },
+      "2": {
+        "secondaryDarkForeground": 0.14,
+        "secondaryLightForeground": 0.08,
+        "mutedForeground": 0.04,
+        "cardDarkForeground": 0.065,
+        "cardLightBackground": 0.7,
+        "cardBorderDarkForeground": 0.1,
+        "cardBorderLightForeground": 0.12,
+        "genericBorderDarkAlpha": 0.1,
+        "genericBorderLightAlpha": 0.12
+      }
+    },
+    "formulas": {
+      "background": "B",
+      "content": "B",
+      "foreground": "F",
+      "primary": "button.background",
+      "primaryForeground": "button.foreground",
+      "link": "textLink.foreground, with client fallback",
+      "secondary": "mix(F, B, mode-specific secondaryForeground factor)",
+      "secondaryForeground": "mix(F, B, 0.75)",
+      "muted": "mix(F, B, mutedForeground factor)",
+      "mutedForeground": "mix(F, B, 0.50)",
+      "genericPlaceholder": "mix(F, B, 0.30); NOT composer placeholder",
+      "sidebar": "mix(F, B, mutedForeground factor)",
+      "sidebarSecondary": "mix(F, sidebar, mode-specific secondaryForeground factor)",
+      "sidebarMuted": "mix(F, sidebar, mutedForeground factor)",
+      "cardDark": "mix(F, B, cardDarkForeground factor)",
+      "cardLight": "mix(B, #ffffff, 0.70)",
+      "cardBorder": "mix(F, card, mode-specific cardBorderForeground factor)",
+      "genericBorderDark": "rgba(255,255,255, genericBorderDarkAlpha)",
+      "genericBorderLight": "rgba(0,0,0, genericBorderLightAlpha)",
+      "composerPlaceholder": "foreground at opacity 0.60 over card; for opaque inputs, mix(F, card, 0.60)",
+      "headerIcon": "secondaryForeground",
+      "headerIconHover": "F on secondary",
+      "welcomeTitle": "F on B",
+      "shell": "background",
+      "glass": "card",
+      "glassBorder": "genericBorder"
+    },
+    "mixDefinition": "mix(X,Y,p) means CSS color-mix(in srgb, X p*100%, Y). For alpha colors preserve CSS premultiplied-alpha semantics."
+  },
+  "settingsScope": {
+    "obsidianPrism.sidebarSurface": {
+      "values": [
+        "layered",
+        "unified",
+        "tinted"
+      ],
+      "default": "layered",
+      "scope": "Shared sideBar colors; affects Explorer and modern conversation-derived surfaces."
+    },
+    "obsidianPrism.inputBorder": {
+      "values": [
+        "subtle",
+        "accent"
+      ],
+      "default": "subtle",
+      "scope": "Native input.border; does not independently control modern or inspected legacy chat composer border."
+    }
+  },
+  "facts": [
+    {
+      "id": "main-chat-location",
+      "statement": "The IDE extension renders the main chat in sideBar location; sideBar background and foreground become internal agy aliases, falling back to editor colors.",
+      "anchors": [
+        {
+          "artifact": "ide-2.8.0",
+          "file": "extensions/agy/vscode/extension.js",
+          "literal": "type:\"main\",location:\"sideBar\"",
+          "byteOffset": 4359508
+        },
+        {
+          "artifact": "ide-2.8.0",
+          "file": "extensions/agy/vscode/extension.js",
+          "literal": "--vscode-agy-background: var(--vscode-${b}-background",
+          "byteOffset": 3543534
+        },
+        {
+          "artifact": "ide-2.8.0",
+          "file": "extensions/agy/vscode/extension.js",
+          "literal": "--vscode-agy-foreground: var(--vscode-${b}-foreground",
+          "byteOffset": 3543644
+        }
+      ]
+    },
+    {
+      "id": "bridge-relay",
+      "statement": "The bridge reads a fixed color allowlist, remaps agy background/foreground into editor.background/editor.foreground/foreground, and calls setTheme. This establishes transmission, not use by every component.",
+      "anchors": [
+        {
+          "artifact": "ide-2.8.0",
+          "file": "extensions/agy/bridge.js",
+          "literal": "const qp=",
+          "byteOffset": 1949597
+        },
+        {
+          "artifact": "ide-2.8.0",
+          "file": "extensions/agy/bridge.js",
+          "literal": "a[\"editor.background\"]=a[\"agy.background\"]",
+          "byteOffset": 1951144
+        },
+        {
+          "artifact": "ide-2.8.0",
+          "file": "extensions/agy/bridge.js",
+          "literal": "hp.setTheme({theme:a,backgroundColor:d[\"editor.background\"]||\"\",colors:d,fonts:g})",
+          "byteOffset": 1951763
+        },
+        {
+          "artifact": "ide-2.8.0",
+          "file": "extensions/agy/bridge.js",
+          "literal": "const tp=new MutationObserver",
+          "byteOffset": 1951846
+        }
+      ]
+    },
+    {
+      "id": "independent-client-channel",
+      "statement": "The bundled extension uses the same official CLI release base as the install script. CLI/front-end versions can change independently of IDE versions.",
+      "anchors": [
+        {
+          "artifact": "ide-2.8.0",
+          "file": "extensions/agy/vscode/extension.js",
+          "literal": "DEFAULT_RELEASE_BASE_URL=\"https://antigravity-cli-auto-updater-974169037036.us-central1.run.app\"",
+          "byteOffset": 1195071
+        }
+      ]
+    },
+    {
+      "id": "actual-setTheme-consumer",
+      "statement": "The frontend receives theme/colors/fonts, stores the color map, merges it with defaults, and applies host semantic CSS variables.",
+      "anchors": [
+        {
+          "artifact": "cli-1.5.14",
+          "file": "main.js",
+          "literal": "function $Sd(",
+          "byteOffset": 12327009
+        },
+        {
+          "artifact": "cli-1.5.14",
+          "file": "main.js",
+          "literal": "a?.rpc(XX.method.setTheme,({theme:c,colors:d,fonts:f})",
+          "byteOffset": 12327166
+        },
+        {
+          "artifact": "cli-1.5.14",
+          "file": "main.js",
+          "literal": "colors:{...a.colors,...dha.getState()}",
+          "byteOffset": 6568367
+        },
+        {
+          "artifact": "cli-1.5.14",
+          "file": "main.js",
+          "literal": "function r0(",
+          "byteOffset": 6570232
+        }
+      ]
+    },
+    {
+      "id": "host-semantic-formulas",
+      "statement": "Host mode derives background, foreground, card, card-border, secondary and placeholder from received host colors. Its initial internal contrast is 1. Contrast 2 has separate factors.",
+      "anchors": [
+        {
+          "artifact": "cli-1.5.14",
+          "file": "main.js",
+          "literal": "let Glc=1,t0=14",
+          "byteOffset": 6569586
+        },
+        {
+          "artifact": "cli-1.5.14",
+          "file": "main.js",
+          "literal": "var Lla=",
+          "byteOffset": 1875732
+        },
+        {
+          "artifact": "cli-1.5.14",
+          "file": "main.js",
+          "literal": "document.documentElement.style.setProperty(\"--card-border\"",
+          "byteOffset": 6576881
+        },
+        {
+          "artifact": "cli-1.5.14",
+          "file": "main.js",
+          "literal": "document.body.toggleAttribute(\"data-agy-theme\",l)",
+          "byteOffset": 6577392
+        }
+      ]
+    },
+    {
+      "id": "actual-composer",
+      "statement": "The ordinary text composer outer layer uses bg-card-border and its inner card uses bg-card. Host input.background/input.border are not used by these layers.",
+      "anchors": [
+        {
+          "artifact": "cli-1.5.14",
+          "file": "main.js",
+          "literal": "id:\"antigravity.agentSidePanelInputBox\"",
+          "byteOffset": 9154782
+        },
+        {
+          "artifact": "cli-1.5.14",
+          "file": "main.js",
+          "literal": "surface-composer relative flex flex-col p-px rounded-2xl bg-card-border",
+          "byteOffset": 9154833
+        },
+        {
+          "artifact": "cli-1.5.14",
+          "file": "main.js",
+          "literal": "surface-composer-card",
+          "byteOffset": 9155070
+        }
+      ]
+    },
+    {
+      "id": "actual-composer-placeholder",
+      "statement": "The Lexical composer placeholder uses text-foreground opacity-60. It does not use the generic semantic placeholder (30% foreground) or input.placeholderForeground.",
+      "anchors": [
+        {
+          "artifact": "cli-1.5.14",
+          "file": "main.js",
+          "literal": "whitespace-nowrap leading-6 text-foreground opacity-60",
+          "byteOffset": 4926343
+        },
+        {
+          "artifact": "cli-1.5.14",
+          "file": "main.js",
+          "literal": "\"aria-label\":\"Message input\"",
+          "byteOffset": 4927876
+        }
+      ]
+    },
+    {
+      "id": "actual-header-and-welcome",
+      "statement": "The header container has no independent background. HeaderButtonIcon uses secondary-foreground normally and foreground/secondary on hover. Welcome title/mark use foreground.",
+      "anchors": [
+        {
+          "artifact": "cli-1.5.14",
+          "file": "main.js",
+          "literal": "k6=({cascadeId:",
+          "byteOffset": 9467243
+        },
+        {
+          "artifact": "cli-1.5.14",
+          "file": "main.js",
+          "literal": "pl-2 text-secondary-foreground",
+          "byteOffset": 8216537
+        },
+        {
+          "artifact": "cli-1.5.14",
+          "file": "main.js",
+          "literal": "displayName=\"HeaderButtonIcon\"",
+          "byteOffset": 5894727
+        },
+        {
+          "artifact": "cli-1.5.14",
+          "file": "main.js",
+          "literal": "bg-transparent text-secondary-foreground hover:text-foreground hover:bg-secondary",
+          "byteOffset": 3507006
+        },
+        {
+          "artifact": "cli-1.5.14",
+          "file": "main.js",
+          "literal": "\"data-testid\":\"home-greeting\"",
+          "byteOffset": 9586989
+        },
+        {
+          "artifact": "cli-1.5.14",
+          "file": "main.js",
+          "literal": "home-greeting-title text-3xl font-normal tracking-tight text-center text-foreground",
+          "byteOffset": 9588361
+        },
+        {
+          "artifact": "cli-1.5.14",
+          "file": "main.js",
+          "literal": "home-greeting-mark text-foreground",
+          "byteOffset": 9588161
+        }
+      ]
+    },
+    {
+      "id": "sidecar-export-is-not-composer-input",
+      "statement": "The mapping from --vscode-input-background to --secondary is an inverse export of app semantic colors to a nested sidecar iframe via theme-change; it is not proof of host input.* consumption by the composer.",
+      "anchors": [
+        {
+          "artifact": "cli-1.5.14",
+          "file": "main.js",
+          "literal": "var xGc=",
+          "byteOffset": 7606389
+        },
+        {
+          "artifact": "cli-1.5.14",
+          "file": "main.js",
+          "literal": "function yGc(",
+          "byteOffset": 7607557
+        },
+        {
+          "artifact": "cli-1.5.14",
+          "file": "main.js",
+          "literal": "type:\"theme-change\",payload:{theme:c.label,themeType:c.type,",
+          "byteOffset": 7608008
+        }
+      ]
+    },
+    {
+      "id": "legacy-workbench-differences",
+      "statement": "Within the legacy agent panel, conversation background is sideBar.background, inner bg-input mixes 90% editor.background with 10% fixed gray, and composer outer gray is fixed #6b728033.",
+      "anchors": [
+        {
+          "artifact": "ide-1.23.2",
+          "file": "out/vs/workbench/workbench.desktop.main.css",
+          "literal": ".antigravity-agent-side-panel{",
+          "byteOffset": 1089808
+        },
+        {
+          "artifact": "ide-1.23.2",
+          "file": "out/vs/workbench/workbench.desktop.main.css",
+          "literal": ".bg-agent-convo-background{background-color:var(--vscode-sideBar-background)}",
+          "byteOffset": 1160822
+        },
+        {
+          "artifact": "ide-1.23.2",
+          "file": "out/vs/workbench/workbench.desktop.main.css",
+          "literal": ".bg-input{background-color:color-mix(in srgb,var(--vscode-editor-background, var(--codeium-editor-background, #1e1e1e)) 90%,#6b7280 10%)}",
+          "byteOffset": 1136734
+        },
+        {
+          "artifact": "ide-1.23.2",
+          "file": "out/vs/workbench/workbench.desktop.main.css",
+          "literal": ".bg-gray-500\\/20{background-color:#6b728033}",
+          "byteOffset": 1135379
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Screenshot wording matches a component in the inspected current frontend; this does not identify the user installed version.",
+    "Receiving a color in setTheme is not proof of use by a particular component.",
+    "No independently registered composer or welcome theme-color IDs were found in the inspected extension metadata and component pipeline.",
+    "Standalone Antigravity App versions and visual effects are a separate product scope.",
+    "Sidebar, foreground and card controls share colors with other native UI; no isolation is promised.",
+    "No logged-in chat screenshot was captured. Theme Studio is an illustrative projection of audited formulas, not a live embedded Antigravity client.",
+    "Frontend upgrades, internal contrast state, browser-hole/voice/standalone modes and user overrides can change actual appearance.",
+    "Minified symbol names and recorded byte offsets are specific to the exact SHA-256 files listed here."
+  ],
+  "reproduction": {
+    "downloadPolicy": "Fetch pinned official archives and manifest as data; never execute install.sh or the CLI to perform this audit.",
+    "ideFiles": "Extract only the referenced resources/app files and compare SHA-256.",
+    "embeddedFrontend": "Read ZIP local file headers from the antigravity binary at recorded offsets; method 8 is raw DEFLATE; verify uncompressed size, CRC-32 and SHA-256. No Google sources are included in this repository.",
+    "consumerCheck": "Follow location=sideBar -> agy aliases -> bridge setTheme -> client color state -> semantic formulas -> actual component classes.",
+    "manualFollowUp": "In a signed-in IDE, check all four Prism themes and sidebarSurface options across header/welcome/composer/history, shared Explorer changes, native input borders, and settings restoration; record IDE/extension/CLI versions."
+  },
+  "auditDisplayDate": {
+    "date": "2026-11-21",
+    "timeZone": "America/New_York",
+    "correspondingUtcDate": "2026-11-22"
+  }
+}

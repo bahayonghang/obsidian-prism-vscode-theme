@@ -13,6 +13,7 @@ const labels = {
   openSettings: ['Open Theme Studio', '打开主题工作室'],
   chooseTheme: ['Choose Color Theme', '选择配色主题'],
   openNativeSettings: ['Open Native Settings', '打开原生设置'],
+  showCompatibilityReport: ['Show Antigravity Compatibility Report', '查看 Antigravity 兼容性报告'],
   applyTypography: ['Apply Editor Typography', '应用编辑器排版'],
   restoreTypography: ['Restore Editor Typography', '恢复编辑器排版'],
   applySystemAppearance: ['Apply System Appearance', '应用系统明暗外观'],

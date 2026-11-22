@@ -11,12 +11,15 @@ export interface ThemeOptions {
   accent: 'default' | 'cobalt' | 'iris' | 'amber' | 'mono' | 'custom';
   customAccent: string;
   contrast: 'standard' | 'high';
+  sidebarSurface: 'layered' | 'unified' | 'tinted';
+  inputBorder: 'subtle' | 'accent';
   italicComments: boolean;
   boldKeywords: boolean;
 }
 
 export const DEFAULT_THEME_OPTIONS: Readonly<ThemeOptions> = Object.freeze({
   accent: 'default', customAccent: '#A58AF8', contrast: 'standard',
+  sidebarSurface: 'layered', inputBorder: 'subtle',
   italicComments: false, boldKeywords: false,
 });
 
@@ -107,6 +110,11 @@ export function ensureContrast(color: string, background: string, minimum = 4.5)
   return mix(normalized, target, high);
 }
 
+/** Shared host text is used on several nearby surfaces, including Antigravity chat. */
+function readableOn(color: string, backgrounds: readonly string[], minimum: number): string {
+  return backgrounds.reduce((value, background) => ensureContrast(value, background, minimum), color);
+}
+
 function buttonLabel(background: string): string {
   return contrastRatio('#FFFFFF', background) >= contrastRatio('#000000', background) ? '#FFFFFF' : '#000000';
 }
@@ -139,19 +147,29 @@ export function createTheme(id: PaletteId, options: Partial<ThemeOptions> = {}):
   const accent = namedAccent ? ACCENTS[p.type][namedAccent] : customAccent ?? p.accent;
   const linkSource = namedAccent ? LINKS[p.type][namedAccent] : customAccent ?? p.link;
   const background = p.background;
-  const foreground = ensureContrast(p.foreground, background, textRatio);
-  const muted = ensureContrast(p.muted, background, textRatio);
+  // Antigravity's bridge sources its conversation canvas from sideBar.*.
+  // These are shared native keys: Explorer and other sidebars change too.
+  const sidebar = settings.sidebarSurface === 'unified' ? background
+    : settings.sidebarSurface === 'tinted' ? mix(p.sidebar, accent, dark ? 0.08 : 0.06)
+      : p.sidebar;
+  // The legacy 1.23.2 composer blends editor.background with a fixed gray.
+  // Its outer gray frame is not controlled by input.border; see ANTIGRAVITY.md.
+  const legacyInput = mix(background, '#6B7280', 0.10);
+  const sharedSurfaces = [background, sidebar, p.surface, p.secondary, legacyInput];
+  const foreground = readableOn(p.foreground, sharedSurfaces, textRatio);
+  const muted = readableOn(p.muted, sharedSurfaces, textRatio);
   const surfaceForeground = ensureContrast(p.foreground, p.surface, textRatio);
   const surfaceMuted = ensureContrast(p.muted, p.surface, textRatio);
-  const sidebarMuted = ensureContrast(p.muted, p.sidebar, textRatio);
-  const focus = ensureContrast(accent, background, 3);
-  const accentText = ensureContrast(accent, background, textRatio);
-  const link = ensureContrast(linkSource, background, textRatio);
+  const sidebarMuted = ensureContrast(p.muted, sidebar, textRatio);
+  const focus = readableOn(accent, sharedSurfaces, 3);
+  const accentText = readableOn(accent, sharedSurfaces, textRatio);
+  const link = readableOn(linkSource, sharedSurfaces, textRatio);
   const surfaceLink = ensureContrast(linkSource, p.surface, textRatio);
   const border = high ? ensureContrast(p.muted, background, 3) : p.border;
   const cardBorder = high ? ensureContrast(p.muted, p.surface, 3) : p.cardBorder;
+  const inputBorder = settings.inputBorder === 'accent' ? readableOn(accent, [p.surface, sidebar], 3) : cardBorder;
   const hover = mix(p.surface, p.foreground, dark ? 0.055 : 0.04);
-  const selected = mix(p.sidebar, accent, dark ? 0.18 : 0.10);
+  const selected = mix(sidebar, accent, dark ? 0.18 : 0.10);
   const selectedForeground = ensureContrast(p.foreground, selected, textRatio);
   const activeSurface = mix(p.surface, accent, dark ? 0.16 : 0.08);
   const activeForeground = ensureContrast(p.foreground, activeSurface, textRatio);
@@ -168,7 +186,7 @@ export function createTheme(id: PaletteId, options: Partial<ThemeOptions> = {}):
     'disabledForeground': alpha(p.foreground, 0.42),
     'errorForeground': error,
     'focusBorder': focus,
-    'icon.foreground': p.secondaryForeground,
+    'icon.foreground': readableOn(p.secondaryForeground, sharedSurfaces, textRatio),
     'selection.background': alpha(accent, 0.25),
     'widget.border': cardBorder,
     'widget.shadow': dark ? '#00000066' : '#0F172A20',
@@ -203,7 +221,7 @@ export function createTheme(id: PaletteId, options: Partial<ThemeOptions> = {}):
     'dropdown.border': cardBorder,
     'input.background': p.surface,
     'input.foreground': surfaceForeground,
-    'input.border': cardBorder,
+    'input.border': inputBorder,
     'input.placeholderForeground': surfaceMuted,
     'inputOption.activeBackground': activeSurface,
     'inputOption.activeForeground': activeForeground,
@@ -228,20 +246,20 @@ export function createTheme(id: PaletteId, options: Partial<ThemeOptions> = {}):
     'list.activeSelectionBackground': selected,
     'list.activeSelectionForeground': selectedForeground,
     'list.activeSelectionIconForeground': selectedForeground,
-    'list.inactiveSelectionBackground': mix(p.sidebar, p.foreground, 0.065),
-    'list.inactiveSelectionForeground': ensureContrast(p.foreground, mix(p.sidebar, p.foreground, 0.065), textRatio),
+    'list.inactiveSelectionBackground': mix(sidebar, p.foreground, 0.065),
+    'list.inactiveSelectionForeground': ensureContrast(p.foreground, mix(sidebar, p.foreground, 0.065), textRatio),
     'list.inactiveSelectionIconForeground': p.secondaryForeground,
     'list.hoverBackground': hover,
     'list.hoverForeground': ensureContrast(p.foreground, hover, textRatio),
     'list.focusBackground': selected,
     'list.focusForeground': selectedForeground,
     'list.focusHighlightForeground': ensureContrast(accent, selected, textRatio),
-    'list.highlightForeground': ensureContrast(accent, p.sidebar, textRatio),
+    'list.highlightForeground': ensureContrast(accent, sidebar, textRatio),
     'list.focusOutline': focus,
     'list.inactiveFocusOutline': border,
     'list.dropBackground': alpha(accent, 0.16),
-    'list.errorForeground': ensureContrast(p.error, p.sidebar, textRatio),
-    'list.warningForeground': ensureContrast(p.warning, p.sidebar, textRatio),
+    'list.errorForeground': ensureContrast(p.error, sidebar, textRatio),
+    'list.warningForeground': ensureContrast(p.warning, sidebar, textRatio),
     'list.deemphasizedForeground': sidebarMuted,
     'listFilterWidget.background': p.surface,
     'listFilterWidget.outline': accent,
@@ -250,8 +268,8 @@ export function createTheme(id: PaletteId, options: Partial<ThemeOptions> = {}):
     'list.filterMatchBorder': alpha(accent, 0.45),
     'tree.indentGuidesStroke': alpha(p.muted, high ? 0.65 : 0.25),
     'tree.inactiveIndentGuidesStroke': alpha(p.muted, high ? 0.40 : 0.12),
-    'activityBar.background': p.sidebar,
-    'activityBar.foreground': ensureContrast(accent, p.sidebar, textRatio),
+    'activityBar.background': sidebar,
+    'activityBar.foreground': ensureContrast(accent, sidebar, textRatio),
     'activityBar.inactiveForeground': sidebarMuted,
     'activityBar.border': border,
     'activityBar.activeBorder': accent,
@@ -263,12 +281,12 @@ export function createTheme(id: PaletteId, options: Partial<ThemeOptions> = {}):
     'activityBarTop.inactiveForeground': muted,
     'activityBarTop.activeBorder': accent,
     'activityBarTop.dropBorder': accent,
-    'sideBar.background': p.sidebar,
-    'sideBar.foreground': ensureContrast(p.foreground, p.sidebar, textRatio),
+    'sideBar.background': sidebar,
+    'sideBar.foreground': ensureContrast(p.foreground, sidebar, textRatio),
     'sideBar.border': border,
-    'sideBarTitle.foreground': ensureContrast(p.foreground, p.sidebar, textRatio),
-    'sideBarSectionHeader.background': mix(p.sidebar, p.foreground, 0.025),
-    'sideBarSectionHeader.foreground': ensureContrast(p.foreground, p.sidebar, textRatio),
+    'sideBarTitle.foreground': ensureContrast(p.foreground, sidebar, textRatio),
+    'sideBarSectionHeader.background': mix(sidebar, p.foreground, 0.025),
+    'sideBarSectionHeader.foreground': ensureContrast(p.foreground, mix(sidebar, p.foreground, 0.025), textRatio),
     'sideBarSectionHeader.border': border,
     'sideBar.dropBackground': alpha(accent, 0.16),
     'editorGroup.border': border,
@@ -499,13 +517,13 @@ export function createTheme(id: PaletteId, options: Partial<ThemeOptions> = {}):
     'debugIcon.continueForeground': info,
     'editor.stackFrameHighlightBackground': alpha(p.warning, 0.12),
     'editor.focusedStackFrameHighlightBackground': alpha(p.success, 0.14),
-    'gitDecoration.addedResourceForeground': ensureContrast(p.success, p.sidebar, textRatio),
-    'gitDecoration.modifiedResourceForeground': ensureContrast(p.warning, p.sidebar, textRatio),
-    'gitDecoration.deletedResourceForeground': ensureContrast(p.error, p.sidebar, textRatio),
-    'gitDecoration.renamedResourceForeground': ensureContrast(info, p.sidebar, textRatio),
-    'gitDecoration.untrackedResourceForeground': ensureContrast(p.success, p.sidebar, textRatio),
+    'gitDecoration.addedResourceForeground': ensureContrast(p.success, sidebar, textRatio),
+    'gitDecoration.modifiedResourceForeground': ensureContrast(p.warning, sidebar, textRatio),
+    'gitDecoration.deletedResourceForeground': ensureContrast(p.error, sidebar, textRatio),
+    'gitDecoration.renamedResourceForeground': ensureContrast(info, sidebar, textRatio),
+    'gitDecoration.untrackedResourceForeground': ensureContrast(p.success, sidebar, textRatio),
     'gitDecoration.ignoredResourceForeground': sidebarMuted,
-    'gitDecoration.conflictingResourceForeground': ensureContrast(p.error, p.sidebar, textRatio),
+    'gitDecoration.conflictingResourceForeground': ensureContrast(p.error, sidebar, textRatio),
     'settings.headerForeground': foreground,
     'settings.modifiedItemIndicator': accent,
     'settings.dropdownBackground': p.surface,

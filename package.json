@@ -1,8 +1,8 @@
 {
   "name": "obsidian-prism-vscode-theme",
   "displayName": "Obsidian Prism Theme",
-  "description": "Four Obsidian Prism color themes with a bilingual Theme Studio and reversible appearance controls. Independent VS Code port.",
-  "version": "0.1.0",
+  "description": "Prism color themes for Antigravity IDE and VS Code, with conversation previews, bilingual settings and reversible appearance controls.",
+  "version": "0.2.0",
   "publisher": "bahayonghang",
   "license": "GPL-3.0-only",
   "author": "bahayonghang",
@@ -27,7 +27,10 @@
     "dark",
     "light",
     "warm",
-    "theme"
+    "theme",
+    "antigravity",
+    "chat",
+    "sidebar"
   ],
   "icon": "media/icon.png",
   "galleryBanner": {
@@ -64,6 +67,11 @@
       {
         "command": "obsidianPrism.openNativeSettings",
         "title": "%command.openNativeSettings%",
+        "category": "Obsidian Prism"
+      },
+      {
+        "command": "obsidianPrism.showCompatibilityReport",
+        "title": "%command.showCompatibilityReport%",
         "category": "Obsidian Prism"
       },
       {
@@ -139,18 +147,41 @@
           "order": 2,
           "markdownDescription": "%setting.contrast%"
         },
+        "obsidianPrism.sidebarSurface": {
+          "type": "string",
+          "enum": [
+            "layered",
+            "unified",
+            "tinted"
+          ],
+          "default": "layered",
+          "scope": "application",
+          "order": 3,
+          "markdownDescription": "%setting.sidebarSurface%"
+        },
+        "obsidianPrism.inputBorder": {
+          "type": "string",
+          "enum": [
+            "subtle",
+            "accent"
+          ],
+          "default": "subtle",
+          "scope": "application",
+          "order": 4,
+          "markdownDescription": "%setting.inputBorder%"
+        },
         "obsidianPrism.italicComments": {
           "type": "boolean",
           "default": false,
           "scope": "application",
-          "order": 3,
+          "order": 5,
           "markdownDescription": "%setting.italicComments%"
         },
         "obsidianPrism.boldKeywords": {
           "type": "boolean",
           "default": false,
           "scope": "application",
-          "order": 4,
+          "order": 6,
           "markdownDescription": "%setting.boldKeywords%"
         },
         "obsidianPrism.codeFont": {
@@ -163,7 +194,7 @@
           ],
           "default": "default",
           "scope": "application",
-          "order": 5,
+          "order": 7,
           "markdownDescription": "%setting.codeFont%"
         },
         "obsidianPrism.ligatures": {
@@ -175,7 +206,7 @@
           ],
           "default": "inherit",
           "scope": "application",
-          "order": 6,
+          "order": 8,
           "markdownDescription": "%setting.ligatures%"
         },
         "obsidianPrism.smoothCaret": {
@@ -187,7 +218,7 @@
           ],
           "default": "inherit",
           "scope": "application",
-          "order": 7,
+          "order": 9,
           "markdownDescription": "%setting.smoothCaret%"
         },
         "obsidianPrism.smoothScrolling": {
@@ -199,7 +230,7 @@
           ],
           "default": "inherit",
           "scope": "application",
-          "order": 8,
+          "order": 10,
           "markdownDescription": "%setting.smoothScrolling%"
         },
         "obsidianPrism.cornerStyle": {
@@ -211,7 +242,7 @@
           ],
           "default": "balanced",
           "scope": "application",
-          "order": 9,
+          "order": 11,
           "markdownDescription": "%setting.cornerStyle%"
         },
         "obsidianPrism.ambientIntensity": {
@@ -224,7 +255,7 @@
           ],
           "default": 70,
           "scope": "application",
-          "order": 10,
+          "order": 12,
           "markdownDescription": "%setting.ambientIntensity%"
         },
         "obsidianPrism.motion": {
@@ -237,7 +268,7 @@
           ],
           "default": "standard",
           "scope": "application",
-          "order": 11,
+          "order": 13,
           "markdownDescription": "%setting.motion%"
         },
         "obsidianPrism.language": {
@@ -249,7 +280,7 @@
           ],
           "default": "auto",
           "scope": "application",
-          "order": 12,
+          "order": 14,
           "markdownDescription": "%setting.language%"
         },
         "obsidianPrism.preferredDark": {
@@ -260,7 +291,7 @@
           ],
           "default": "obsidian",
           "scope": "application",
-          "order": 13,
+          "order": 15,
           "markdownDescription": "%setting.preferredDark%"
         },
         "obsidianPrism.preferredLight": {
@@ -271,7 +302,7 @@
           ],
           "default": "crystal",
           "scope": "application",
-          "order": 14,
+          "order": 16,
           "markdownDescription": "%setting.preferredLight%"
         }
       }

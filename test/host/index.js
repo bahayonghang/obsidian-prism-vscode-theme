@@ -1,6 +1,7 @@
 // Actual VS Code API integration tests; no mocked configuration store. GPL-3.0-only.
 const assert = require('node:assert/strict');
 const vscode = require('vscode');
+const { detectHostAppearance } = require('../../out/host.js');
 
 const extensionId = 'bahayonghang.obsidian-prism-vscode-theme';
 const scope = '[Obsidian Prism — Obsidian Dark]';
@@ -62,7 +63,7 @@ exports.run = async function run() {
     assert.equal(extension.isActive, true);
     assert.equal(extension.packageJSON.contributes.themes.length, 4);
     assert.deepEqual(extension.packageJSON.contributes.themes.map((theme) => theme.label), labels);
-    assert.equal(extension.packageJSON.contributes.commands.length, 10);
+    assert.equal(extension.packageJSON.contributes.commands.length, 11);
     const registered = await vscode.commands.getCommands(true);
     for (const item of extension.packageJSON.contributes.commands) assert.ok(registered.includes(item.command), item.command);
     // Drain the extension's activation queue through an intentionally empty
@@ -70,6 +71,91 @@ exports.run = async function run() {
     await command('restoreTypography');
     sameValues(['workbench.colorTheme', ...typographyKeys, ...systemKeys, ...highContrastKeys], baseline);
     sameValues(['workbench.colorCustomizations', 'editor.tokenColorCustomizations', 'editor.semanticTokenColorCustomizations'], baseline);
+  });
+
+  await check('host metadata reports the actual IDE product version separately from its engine', async () => {
+    const host = await detectHostAppearance();
+    assert.equal(host.appName, vscode.env.appName);
+    assert.equal(host.vscodeVersion, vscode.version);
+    if (process.env.PRISM_EXPECTED_IDE_VERSION) {
+      assert.equal(host.kind, 'antigravity-ide');
+      assert.equal(host.ideVersion, process.env.PRISM_EXPECTED_IDE_VERSION, 'the test must run against the requested actual Antigravity IDE product');
+    }
+    console.log(`[host] Appearance metadata: ${host.appName}; IDE ${host.ideVersion || 'n/a'}; engine ${host.vscodeVersion}; bridge ${host.bridgeVersion || 'unavailable'}; path ${host.colorPath}.`);
+    // Agent extensions can be disabled in these API tests. Their missing bridge
+    // metadata must stay unverified instead of inferring a bridge from the IDE version.
+    if (host.ideVersion === '2.8.0' && !host.bridgeVersion) assert.equal(host.colorPath, 'unverified');
+  });
+
+  await check('compatibility report opens read-only metadata without changing settings', async () => {
+    const keys = ['workbench.colorTheme', 'workbench.colorCustomizations', ...typographyKeys, ...systemKeys];
+    const before = Object.fromEntries(keys.map(key => [key, read(key)]));
+    await command('showCompatibilityReport');
+    const document = vscode.window.activeTextEditor?.document;
+    assert.ok(document, 'a compatibility report editor must be visible');
+    assert.equal(document.uri.scheme, 'obsidian-prism-report', 'content-provider documents are read-only');
+    assert.equal(document.isUntitled, false, 'the report must not open as an editable untitled document');
+    assert.equal(document.languageId, 'plaintext');
+    assert.ok(document.getText().includes(vscode.env.appName));
+    assert.ok(document.getText().includes(vscode.version));
+    assert.match(document.getText(), /Source reference match|源码样本匹配/);
+    if (vscode.env.appRoot) assert.ok(!document.getText().includes(vscode.env.appRoot), 'local installation paths must not be included');
+    sameValues(keys, before);
+  });
+
+  await check('sidebar and input preferences cover all four palettes and preserve native user overrides', async () => {
+    const originalColors = JSON.parse(JSON.stringify(read('workbench.colorCustomizations')));
+    const seeded = JSON.parse(JSON.stringify(originalColors));
+    const lightScope = `[${labels[2]}]`;
+    seeded['sideBar.background'] = '#343434';
+    seeded[scope]['sideBar.background'] = '#171A1F';
+    seeded[scope]['input.border'] = '#3C4859';
+    seeded[lightScope] = { 'sideBar.background': '#EFEDEE', 'input.border': '#CCAABB' };
+    await write('workbench.colorCustomizations', seeded);
+    await write('obsidianPrism.sidebarSurface', 'unified');
+    await write('obsidianPrism.inputBorder', 'accent');
+
+    const editorBackgrounds = ['#0E0E11', '#141413', '#F4F7FB', '#F6F4EE'];
+    const accents = ['#669DF6', '#D97757', '#2563EB', '#C25934'];
+    await until(() => labels.every((label, index) => {
+      const colors = read('workbench.colorCustomizations')?.[`[${label}]`];
+      return colors?.['sideBar.background'] === editorBackgrounds[index] && colors?.['input.border'] === accents[index];
+    }), 'four unified sidebar and accented input scopes');
+    let colors = read('workbench.colorCustomizations');
+    assert.equal(colors['sideBar.background'], '#343434', 'a global native override must not be rewritten');
+    assert.deepEqual(colors['[Monokai]'], originalColors['[Monokai]']);
+    assert.equal(colors[scope]['editor.background'], originalColors[scope]['editor.background'], 'the user editor canvas remains independent');
+    assert.equal(read('workbench.colorTheme'), baseline['workbench.colorTheme']);
+
+    await write('obsidianPrism.sidebarSurface', 'tinted');
+    await until(() => labels.every((label, index) => {
+      const background = read('workbench.colorCustomizations')?.[`[${label}]`]?.['sideBar.background'];
+      return /^#[0-9A-F]{6}$/.test(background || '') && background !== editorBackgrounds[index];
+    }), 'tinted backgrounds in both dark and light palettes');
+    colors = JSON.parse(JSON.stringify(read('workbench.colorCustomizations')));
+    colors[scope]['sideBar.background'] = '#123456';
+    colors[scope]['input.border'] = '#654321';
+    await write('workbench.colorCustomizations', colors);
+    await write('obsidianPrism.accent', 'iris');
+    await write('obsidianPrism.sidebarSurface', 'unified');
+    await until(() => labels.slice(1).every((label, index) => {
+      const values = read('workbench.colorCustomizations')?.[`[${label}]`];
+      return values?.['sideBar.background'] === editorBackgrounds[index + 1]
+        && values?.['input.border'] === (index === 0 ? '#A58AF8' : '#7C3AED');
+    }), 'unmodified sidebar scopes follow later preferences');
+    colors = read('workbench.colorCustomizations');
+    assert.equal(colors[scope]['sideBar.background'], '#123456', 'later manual sidebar edits remain authoritative');
+    assert.equal(colors[scope]['input.border'], '#654321', 'later manual input border edits remain authoritative');
+
+    await command('resetCustomizations');
+    const expected = JSON.parse(JSON.stringify(seeded));
+    expected[scope]['sideBar.background'] = '#123456';
+    expected[scope]['input.border'] = '#654321';
+    assert.deepEqual(read('workbench.colorCustomizations'), expected, 'reset restores light-palette originals and removes owned new leaves while keeping manual dark-palette edits');
+    assert.deepEqual(read('editor.tokenColorCustomizations'), baseline['editor.tokenColorCustomizations']);
+    assert.deepEqual(read('editor.semanticTokenColorCustomizations'), baseline['editor.semanticTokenColorCustomizations']);
+    // Remove only this scenario's seeded and manual values for the later checks.
+    await write('workbench.colorCustomizations', originalColors);
   });
 
   await check('native Settings applies accent overrides only inside four exact Prism scopes', async () => {
